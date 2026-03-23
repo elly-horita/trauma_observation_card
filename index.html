@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+<title>外傷観察カード（テスト）</title>
+<style>
+  :root {
+    --bg: #f3f4f6;
+    --card: #ffffff;
+    --line: #1f2937;
+    --muted: #6b7280;
+    --a: #f3f4f6;
+    --b: #fff36a;
+    --c: #48ff48;
+    --danger: #d90000;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: var(--bg);
+    color: #111827;
+  }
+  button {
+    color: #000;
+    -webkit-text-fill-color: #000;
+    -webkit-appearance: none;
+  }
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 16px 16px;
+  }
+  .topbar {
+    display: grid;
+    gap: 16px;
+    align-items: start;
+  }
+  .panel {
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  }
+  .result-panel {
+    position: sticky;
+    bottom: 12px;
+    z-index: 30;
+    border: 4px solid #111827;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(6px);
+  }
+  .result-panel.expanded {
+    transform: translateY(0);
+  }
+  #resultCompact {
+    margin-bottom: 0;
+    transition: margin-bottom 0.2s ease;
+  }
+  #resultFull {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition:
+      opacity 0.2s ease,
+      max-height 0.25s ease,
+      transform 0.2s ease;
+  }
+  .result-panel.expanded #resultCompact {
+    margin-bottom: 12px;
+  }
+  .result-panel.expanded #resultFull {
+    opacity: 1;
+    max-height: 50vh;
+    overflow: auto;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .judge-badges {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .judge-badge {
+    min-width: 64px;
+    text-align: center;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-weight: 800;
+  }
+  .judge-badge.a { background: var(--a); }
+  .judge-badge.b { background: var(--b); }
+  .judge-badge.c { background: var(--c); }
+  .result-main {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .result-level {
+    margin-top: 8px;
+    font-size: 56px;
+    font-weight: 900;
+    border: 2px solid var(--line);
+    border-radius: 18px;
+    padding: 14px 0;
+    text-align: center;
+  }
+  .result-level.a { background: var(--a); }
+  .result-level.b { background: var(--b); }
+  .result-level.c { background: var(--c); }
+  .summary-box {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background: #fafafa;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  button {
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    background: white;
+    padding: 10px 14px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .content {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .section-title {
+    margin: 0 0 12px;
+    font-size: 22px;
+    font-weight: 900;
+    padding-left: 10px;
+    border-left: 8px solid #111827;
+  }
+  .field {
+    border: 1px solid #d1d5db;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .field-head {
+    background: #111827;
+    color: white;
+    padding: 10px 12px;
+    font-weight: 800;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+  }
+  .field-meta {
+    font-size: 12px;
+    opacity: .8;
+    font-weight: 500;
+  }
+  .field-toggle {
+    font-size: 16px;
+    line-height: 1;
+    min-width: 16px;
+    text-align: center;
+  }
+  .field-head {
+    user-select: none;
+  }
+
+  .field-body {
+    padding: 12px;
+    background: #fff;
+  }
+  .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  .option {
+    border: 2px solid #9ca3af;
+    border-radius: 14px;
+    padding: 10px;
+    min-height: 54px;
+    cursor: pointer;
+    background: white;
+    font-weight: 800;
+    line-height: 1.4;
+    text-align: center;
+  }
+  .option.zone-white { background: #fff; }
+  .option.zone-yellow { background: var(--b); }
+  .option.zone-green { background: var(--c); }
+  .option.red-flag { box-shadow: inset 0 0 0 3px var(--danger); }
+  .option.selected {
+    border-color: #111827;
+    outline: 4px solid #111827;
+    outline-offset: -4px;
+  }
+  .option-check {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 8px;
+  }
+  .checkmark {
+    font-size: 18px;
+    line-height: 1;
+    flex: 0 0 auto;
+  }
+  .check-group {
+    border-radius: 14px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .check-group-white {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+  }
+  .check-group-yellow {
+    background: #fff36a;
+    border: 1px solid #d4b900;
+  }
+  .check-group-green {
+    background: #48ff48;
+    border: 1px solid #2da52d;
+  }
+  .check-group-redgreen {
+    background: #48ff48;
+    border: 3px solid #d90000;
+  }
+  .check-group-title {
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .check-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 6px;
+  }
+  .check-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    border: 1px solid rgba(17,24,39,.18);
+    border-radius: 10px;
+    background: rgba(255,255,255,.45);
+    padding: 9px 10px;
+    font: inherit;
+    cursor: pointer;
+	  align-items: flex-start;
+  }
+  .check-row.selected {
+    border-color: #111827;
+    outline: 3px solid #111827;
+    outline-offset: -3px;
+    background: rgba(255,255,255,.85);
+  }
+  .checkmark {
+    flex: 0 0 auto;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .check-label {
+    flex: 1 1 auto;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .option-label { flex: 1 1 auto; }
+  .option small {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+  .num-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 10px;
+    align-items: center;
+  }
+  input[type="number"],
+  input[type="text"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 2px solid #9ca3af;
+    font: inherit;
+    background: #fff;
+  }
+  textarea {
+    min-height: 88px;
+    resize: vertical;
+  }
+  .hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .selected-list {
+    margin: 12px 0 0;
+    padding-left: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .selected-list li { margin-bottom: 6px; }
+  pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-top: 12px;
+    background: #0f172a;
+    color: #d1fae5;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    overflow: auto;
+  }
+	
+  @media (max-width: 920px) {
+    .topbar { grid-template-columns: 1fr; }
+    .row, .num-grid { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body * {
+      visibility: hidden !important;
+    }
+
+    #resultPanel,
+    #resultPanel * {
+      visibility: visible !important;
+    }
+
+    #resultPanel {
+      position: absolute !important;
+      left: 0;
+      top: 0;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      box-shadow: none !important;
+    }
+
+    .actions {
+      display: none !important;
+    }
+
+    body {
+      background: #fff !important;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <section class="panel">
+      <h1>外傷観察カード</h1>
+      <div class="sub">
+        ※１　赤枠の項目が１つでもあれば、重症と判断する。<br />
+		※２　緑色の項目は総合的に重症度を判断する。<br />
+		項目の総合判断ロジックは暫定。運用に合わせて要調整。
+      </div>
+      <div class="judge-badges">
+        <div class="judge-badge a">A</div>
+        <div class="judge-badge b">B</div>
+        <div class="judge-badge c">C</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="content">
+    <section class="panel">
+      <h2 class="section-title">基本設定</h2>
+      <div id="basicSettings"></div>
+    </section>
+    <section class="panel">
+      <h2 class="section-title">外見</h2>
+      <div id="appearance"></div>
+    </section>
+    <section class="panel">
+      <h2 class="section-title">バイタルサイン</h2>
+      <div id="vitals"></div>
+    </section>
+    <section class="panel">
+      <h2 class="section-title">主訴・局所状態</h2>
+      <div id="local"></div>
+    </section>
+    <section class="panel">
+      <h2 class="section-title">記事欄</h2>
+      <div id="notes"></div>
+    </section>
+    <section class="panel result-panel" id="resultPanel">
+      <div id="resultCompact">
+        <div class="result-main">総合判定</div>
+        <div id="resultLevel" class="result-level a">A</div>
+      </div>
+
+      <div id="resultFull">
+        <div id="resultReason" class="summary-box"></div>
+        <ul id="selectedList" class="selected-list"></ul>
+        <div class="actions">
+          <button id="exportBtn" type="button">JSON出力</button>
+          <button id="resetBtn" type="button">リセット</button>
+          <button id="pdfBtn" type="button">PDF出力</button>
+        </div>
+        <pre id="jsonOut" hidden></pre>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const schema = {
+  meta: {
+    id: 'tokyo-fire-trauma-observation-card',
+    title: '外傷観察カード',
+    version: '0.3-prototype'
+  },
+  ageBands: [
+    { id: 'adult', label: '成人' },
+    { id: 'age_6_to_15', label: '6歳以上15歳未満' },
+    { id: 'age_3_to_6', label: '3歳以上6歳未満' },
+    { id: 'age_1_to_3', label: '1歳以上3歳未満' },
+    { id: 'under_1', label: '1歳未満' }
+  ],
+  sections: [
+    {
+      id: 'basicSettings',
+      mountId: 'basicSettings',
+      title: '基本設定',
+      fields: [
+        {
+          id: 'age_band',
+          label: '年齢区分',
+          kind: 'select',
+          required: true,
+          options: [
+            { id: 'adult', label: '成人' },
+            { id: 'age_6_to_15', label: '6歳以上15歳未満' },
+            { id: 'age_3_to_6', label: '3歳以上6歳未満' },
+            { id: 'age_1_to_3', label: '1歳以上3歳未満' },
+            { id: 'under_1', label: '1歳未満' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'appearance',
+      mountId: 'appearance',
+      title: '外見',
+      fields: [
+        {
+          id: 'general_state',
+          label: '状態',
+          kind: 'single',
+          options: [
+            { id: 'walkable', label: '歩行可能', level: 'A', colorZone: 'white' },
+            { id: 'unable_to_walk', label: '仰/側/腹/坐/その他', level: 'A', colorZone: 'white' },
+            { id: 'collapse', label: '虚脱', level: 'C', colorZone: 'green', redFlag: true }
+          ]
+        },
+        {
+          id: 'face_color',
+          label: '顔色',
+          kind: 'single',
+          options: [
+            { id: 'face_normal', label: '正常', level: 'A', colorZone: 'white' },
+            { id: 'face_flush', label: '黄・紅潮', level: 'B', colorZone: 'yellow' },
+            { id: 'face_cyanosis', label: '土気色', level: 'C', colorZone: 'green', redFlag: false },
+            { id: 'face_cyanosis_red', label: '蒼白・チアノーゼ', level: 'C', colorZone: 'green', redFlag: true }			  
+          ]
+        },
+        {
+          id: 'expression',
+          label: '表情',
+          kind: 'single',
+          options: [
+            { id: 'expr_normal', label: '正常', level: 'A', colorZone: 'white' },
+            { id: 'expr_agitated', label: '興奮・不安・苦悶', level: 'B', colorZone: 'yellow' },
+            { id: 'expr_blank', label: '無表情・うつろ', level: 'C', colorZone: 'green', redFlag: true }
+          ]
+        },
+        {
+          id: 'vomit_incontinence',
+          label: '嘔吐・失禁',
+          kind: 'single',
+          options: [
+            { id: 'vomit_none', label: 'なし', level: 'A', colorZone: 'white' },
+            { id: 'vomit_yes', label: '嘔気・嘔吐・吐血・喀血', level: 'B', colorZone: 'yellow' },
+            { id: 'incontinence', label: '失禁（大・小）', level: 'C', colorZone: 'green', redFlag: false }
+          ]
+        },
+        {
+          id: 'skin_temp',
+          label: '皮膚・体温等',
+          kind: 'single',
+          options: [
+            { id: 'skin_normal', label: '正常', level: 'A', colorZone: 'white' },
+            { id: 'skin_warn', label: '乾燥・発熱・湿潤・発汗・浮腫', level: 'B', colorZone: 'yellow' },
+            { id: 'skin_cold_red', label: '冷汗', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'skin_cold', label: '冷感', level: 'C', colorZone: 'green', redFlag: false }
+          ]
+        },
+        {
+          id: 'onjunctiva_nailbed_extremities',
+          label: '眼瞼結膜・爪床・四肢末梢',
+          kind: 'single',
+          options: [
+            { id: 'peripheral_normal', label: '正常', level: 'A', colorZone: 'white' },
+            { id: 'peripheral_pale', label: '蒼白・チアノーゼ', level: 'C', colorZone: 'green', redFlag: false }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'vitals',
+      mountId: 'vitals',
+      title: 'バイタルサイン',
+      fields: [
+        {
+          id: 'consciousness',
+          label: '意識',
+          kind: 'single',
+          options: [
+            { id: 'cons_clear', label: '清明', level: 'A', colorZone: 'white' },
+            { id: 'cons_b', label: '1・2・3・10', level: 'B', colorZone: 'yellow' },
+            { id: 'cons_c', label: '20・30・100・200・300', level: 'C', colorZone: 'green', redFlag: true }
+          ]
+        },
+        {
+          id: 'resp_quality',
+          label: '呼吸・性状',
+          kind: 'single',
+          options: [
+            { id: 'resp_q_normal', label: '正常', level: 'A', colorZone: 'white' },
+            { id: 'resp_q_warn', label: '浅・深・喘鳴', level: 'B', colorZone: 'yellow' },
+            { id: 'resp_q_abnormal', label: '異常・呼吸なし', level: 'C', colorZone: 'green', redFlag: true }
+          ]
+        },
+        {
+          id: 'resp_rate',
+          label: '呼吸数（回/分）',
+          kind: 'number',
+          unit: '回/分',
+          placeholder: '数値入力',
+          thresholdsByAge: {
+            adult: [
+              { min: 16, max: 19, level: 'A', label: '16〜19' },
+              { min: 20, max: 29, level: 'B', label: '20〜29' },
+              { min: 10, max: 15, level: 'B', label: '10〜15' },
+              { min: null, max: 9, level: 'C', label: '10未満', redFlag: true },
+              { min: 30, max: null, level: 'C', label: '30以上', redFlag: true }
+            ],
+            age_6_to_15: [
+              { min: 15, max: 30, level: 'A', label: '15〜30' },
+              { min: null, max: 14, level: 'C', label: '15未満', redFlag: true },
+              { min: 31, max: null, level: 'C', label: '31以上', redFlag: true }
+            ],
+            age_3_to_6: [
+              { min: 20, max: 30, level: 'A', label: '20〜30' },
+              { min: null, max: 19, level: 'C', label: '20未満', redFlag: true },
+              { min: 31, max: null, level: 'C', label: '31以上', redFlag: true }
+            ],
+            age_1_to_3: [
+              { min: 20, max: 40, level: 'A', label: '20〜40' },
+              { min: null, max: 19, level: 'C', label: '20未満', redFlag: true },
+              { min: 41, max: null, level: 'C', label: '41以上', redFlag: true }
+            ],
+            under_1: [
+              { min: 30, max: 60, level: 'A', label: '30〜60' },
+              { min: null, max: 29, level: 'C', label: '30未満', redFlag: true },
+              { min: 61, max: null, level: 'C', label: '61以上', redFlag: true }
+            ]
+          }
+        },
+        {
+          id: 'breath_sound',
+          label: '呼吸音',
+          kind: 'single',
+          options: [
+            { id: 'resp_q_normal', label: '正常', level: 'A', colorZone: 'white' },
+            { id: 'resp_q_lr_none', label: '左右差なし', level: 'B', colorZone: 'yellow' },
+            { id: 'resp_q_lr_yes', label: '左右差あり', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'resp_q_dry', label: '乾性ラ音', level: 'C', colorZone: 'green', redFlag: false },
+            { id: 'resp_q_wet', label: '湿性ラ音', level: 'C', colorZone: 'green', redFlag: false },
+            { id: 'resp_q_stenosis', label: '狭窄音', level: 'C', colorZone: 'green', redFlag: false }
+          ]
+        },
+        {
+          id: 'pulse_tension',
+          label: '緊張度',
+          kind: 'single',
+          options: [
+            { id: 'pulse_tnormal', label: '正常', level: 'A', colorZone: 'white' },
+            { id: 'pulse_t_strong', label: '強', level: 'B', colorZone: 'yellow' },
+            { id: 'pulse_t_weak', label: '弱', level: 'B', colorZone: 'yellow' },
+            { id: 'pulse_t_lrdeffnone', label: '左右差なし', level: 'B', colorZone: 'yellow' },
+            { id: 'tpulse_t_lrdeffyes', label: '左右差あり', level: 'B', colorZone: 'yellow' },
+            { id: 'pulse_t_veryweak', label: '微弱', level: 'C', colorZone: 'green', redFlag: false }
+          ]
+        },
+        {
+          id: 'pulse_rhythm',
+          label: 'リズム',
+          kind: 'single',
+          options: [
+            { id: 'pulse_rhythm_regular', label: '整', level: 'A', colorZone: 'white' },
+            { id: 'pulse_rhythm_irregular', label: '不脈', level: 'C', colorZone: 'green', redFlag: false },
+            { id: 'pulse_rhythm_no_carotid', label: '総頸触れず', level: 'C', colorZone: 'green', redFlag: true }
+          ]
+        },
+        {
+          id: 'pulse_rate',
+          label: '脈拍数（回/分）',
+          kind: 'number',
+          unit: '回/分',
+          placeholder: '数値入力',
+          thresholdsByAge: {
+            adult: [
+              { min: 50, max: 100, level: 'A', label: '50〜100' },
+              { min: 101, max: 109, level: 'B', label: '101〜109' },
+              { min: null, max: 49, level: 'C', label: '50未満', redFlag: true },
+              { min: 120, max: null, level: 'C', label: '120以上', redFlag: true }
+            ],
+            age_6_to_15: [
+              { min: 60, max: 110, level: 'A', label: '60〜110' },
+              { min: null, max: 59, level: 'C', label: '60未満', redFlag: true },
+              { min: 111, max: null, level: 'C', label: '111以上', redFlag: true }
+            ],
+            age_3_to_6: [
+              { min: 70, max: 110, level: 'A', label: '70〜110' },
+              { min: null, max: 69, level: 'C', label: '70未満', redFlag: true },
+              { min: 111, max: null, level: 'C', label: '111以上', redFlag: true }
+            ],
+            age_1_to_3: [
+              { min: 80, max: 130, level: 'A', label: '80〜130' },
+              { min: null, max: 79, level: 'C', label: '80未満', redFlag: true },
+              { min: 131, max: null, level: 'C', label: '131以上', redFlag: true }
+            ],
+            under_1: [
+              { min: 80, max: 160, level: 'A', label: '80〜160' },
+              { min: null, max: 79, level: 'C', label: '80未満', redFlag: true },
+              { min: 161, max: null, level: 'C', label: '161以上', redFlag: true }
+            ]
+          }
+        },
+        {
+          id: 'systolic_bp',
+          label: '収縮期血圧',
+          kind: 'number',
+          unit: 'mmHg',
+          placeholder: '数値入力',
+          thresholds: [
+            { min: 90, max: 140, level: 'A', label: '90〜140' },
+            { min: 141, max: 199, level: 'B', label: '141〜199' },
+            { min: null, max: 89, level: 'C', label: '90未満', redFlag: true },
+            { min: 200, max: null, level: 'C', label: '200以上' }
+          ],
+          extraOptions: [
+            { id: 'bp_unmeasurable', label: '測定不能', level: 'C', colorZone: 'green', redFlag: true }
+          ]
+        },
+        {
+          id: 'spo2',
+          label: 'SpO₂',
+          kind: 'number',
+          unit: '%',
+          placeholder: '数値入力',
+          thresholds: [
+            { min: 93, max: 100, level: 'A', label: '93%以上' },
+            { min: 90, max: 92, level: 'B', label: '90〜92%' },
+            { min: null, max: 89, level: 'C', label: '90%未満', redFlag: true }
+          ]
+        },
+        {
+          id: 'pupil_reflex',
+          label: '瞳孔反射',
+          kind: 'single',
+          options: [
+            { id: 'pupil_ref_normal', label: '正常', level: 'A', colorZone: 'white' },
+            { id: 'pupil_ref_slow', label: 'にぶい', level: 'B', colorZone: 'yellow' },
+            { id: 'pupil_ref_none', label: 'なし', level: 'C', colorZone: 'green' }
+          ]
+        },
+        {
+          id: 'pupil_left',
+          label: '瞳孔径 左',
+          kind: 'number_free',
+          unit: 'mm',
+          placeholder: '1〜8程度'
+        },
+        {
+          id: 'pupil_right',
+          label: '瞳孔径 右',
+          kind: 'number_free',
+          unit: 'mm',
+          placeholder: '1〜8程度'
+        },
+        {
+          id: 'prejudice',
+          label: '偏視',
+          kind: 'single',
+          options: [
+            { id: 'prejudice_normal', label: 'なし', level: 'A', colorZone: 'white' },
+            { id: 'prejudice_lr', label: '左・右', level: 'C', colorZone: 'green' },
+            { id: 'prejudice_tb', label: '上・下', level: 'C', colorZone: 'green' },
+            { id: 'prejudice_di', label: '斜め', level: 'C', colorZone: 'green' },
+            { id: 'prejudice_joint', label: '共同偏視', level: 'C', colorZone: 'green' }
+          ]
+        },
+      ]
+    },
+    {
+      id: 'local',
+      mountId: 'local',
+      title: '主訴・局所状態',
+      fields: [
+        {
+          id: 'convulsion',
+          label: '痙攣等',
+          kind: 'multi',
+          options: [
+            { id: 'convulsion_related_none', label: 'なし', level: 'A', colorZone: 'white' },
+            { id: 'convulsion_related_tremor1', label: 'ふるえ', level: 'B', colorZone: 'yellow' },
+            { id: 'convulsion_related_tremor2', label: '弛緩', level: 'B', colorZone: 'yellow' },
+            { id: 'convulsion_related_tremor3', label: '痙攣（局所間代）', level: 'B', colorZone: 'yellow' },
+            { id: 'convulsion_related_tonic', label: '全身硬直', level: 'C', colorZone: 'green', redFlag: false },
+            { id: 'convulsion_related_numbness1', label: 'しびれ', level: 'B', colorZone: 'yellow' },
+            { id: 'convulsion_related_numbness2', label: '悪寒', level: 'B', colorZone: 'yellow' },
+            { id: 'convulsion_related_numbness3', label: 'めいまい', level: 'B', colorZone: 'yellow' },
+            { id: 'convulsion_related_numbness4', label: '耳鳴', level: 'B', colorZone: 'yellow' },
+            { id: 'convulsion_related_numbness5', label: '動機', level: 'B', colorZone: 'yellow' },
+            { id: 'convulsion_related_chest_distress', label: '脱力感', level: 'C', colorZone: 'green', redFlag: false },
+            { id: 'convulsion_related_chest_distress2', label: '胸内苦悶', level: 'C', colorZone: 'green', redFlag: false }
+          ]
+        },
+        {
+          id: 'paralysis',
+          label: '麻痺',
+          kind: 'multi',
+          options: [
+            { id: 'para_none', label: 'なし', level: 'A', colorZone: 'white' },
+            { id: 'para_lang', label: '言語', level: 'B', colorZone: 'yellow' },
+            { id: 'para_lang', label: '知覚', level: 'B', colorZone: 'yellow' },
+            { id: 'para_motor', label: '運動（上肢）', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'para_motor', label: '運動（下肢）', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'para_motor', label: '運動（片側）', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'para_motor', label: '運動（上半身）', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'para_motor', label: '運動（下半身）', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'para_motor', label: '運動（全麻痺）', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'para_decerebrate', label: '除脳硬直', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'para_decerebrate', label: '除皮質硬直', level: 'C', colorZone: 'green', redFlag: true }
+          ]
+        },
+        {
+          id: 'parts',
+          label: '部位',
+          kind: 'multi',
+          options: [
+            { id: 'parts1', label: '頭', level: 'A', colorZone: 'white' },
+            { id: 'parts2', label: '顔', level: 'A', colorZone: 'white' },
+            { id: 'parts3', label: '眼', level: 'A', colorZone: 'white' },
+            { id: 'parts4', label: '鼻', level: 'A', colorZone: 'white' },
+            { id: 'parts5', label: '口', level: 'A', colorZone: 'white' },
+            { id: 'parts6', label: '耳', level: 'A', colorZone: 'white' },
+            { id: 'parts7', label: '頸', level: 'A', colorZone: 'white' },
+            { id: 'parts8', label: '肩', level: 'A', colorZone: 'white' },
+            { id: 'parts9', label: '胸', level: 'A', colorZone: 'white' },
+            { id: 'parts10', label: '腹', level: 'A', colorZone: 'white' },
+            { id: 'parts11', label: '腰', level: 'A', colorZone: 'white' },
+            { id: 'parts12', label: '背', level: 'A', colorZone: 'white' },
+            { id: 'parts13', label: '臀', level: 'A', colorZone: 'white' },
+            { id: 'parts14', label: '陰', level: 'A', colorZone: 'white' },
+            { id: 'parts15', label: '前額', level: 'A', colorZone: 'white' },
+            { id: 'parts16', label: '前胸部', level: 'A', colorZone: 'white' },
+            { id: 'parts17', label: '上腹部', level: 'A', colorZone: 'white' },
+          ]
+        },
+        {
+          id: 'pain',
+          label: '痛み',
+          kind: 'multi',
+          options: [
+            { id: 'pain_none', label: 'なし', level: 'A', colorZone: 'white' },
+            { id: 'pain_warn', label: '鈍痛・激痛', level: 'B', colorZone: 'yellow' },
+            { id: 'pain_warn', label: '限局・放散', level: 'B', colorZone: 'yellow' },
+            { id: 'pain_warn', label: '間歇・持続', level: 'B', colorZone: 'yellow' }
+          ]
+        },
+        {
+          id: 'bleeding',
+          label: '出血',
+          kind: 'multi',
+          options: [
+            { id: 'bleed_none', label: 'なし', level: 'A', colorZone: 'white' },
+            { id: 'bleed_small', label: '少', level: 'B', colorZone: 'yellow' },
+            { id: 'bleed_large', label: '中', level: 'C', colorZone: 'green' },
+            { id: 'bleed_large', label: '多', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'bleed_csf', label: '髄液（耳・鼻）漏', level: 'C', colorZone: 'green', redFlag: true }
+          ]
+        },
+        {
+          id: 'injury_type',
+          label: '創傷等',
+          kind: 'multi',
+          options: [
+            { id: 'inj_none', label: 'なし', level: 'A', colorZone: 'white' },
+            { id: 'inj_surface1', label: '擦過傷', level: 'B', colorZone: 'yellow' },
+            { id: 'inj_surface2', label: '打撲', level: 'B', colorZone: 'yellow' },  
+            { id: 'inj_surface3', label: '咬創', level: 'B', colorZone: 'yellow' },
+            { id: 'inj_surface4', label: '切創', level: 'B', colorZone: 'yellow' },
+            { id: 'inj_surface5', label: '割創', level: 'B', colorZone: 'yellow' },  
+            { id: 'inj_surface6', label: '挫滅創', level: 'B', colorZone: 'yellow' },
+            { id: 'inj_penetrating', label: '刺創', level: 'C', colorZone: 'green' },
+            { id: 'inj_penetrating', label: '杙創', level: 'C', colorZone: 'green' },
+            { id: 'inj_penetrating', label: '切断', level: 'C', colorZone: 'green' },
+            { id: 'inj_penetrating', label: '轢断', level: 'C', colorZone: 'green' },
+            { id: 'inj_major1', label: '頭・頸・胸・腹・鼠頸部への穿通性外傷', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major2', label: 'フレイルチェスト', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major3', label: '多指切断', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major4', label: '四肢の切断', level: 'C', colorZone: 'green', redFlag: true },	  
+            { id: 'inj_major5', label: '腹壁緊張', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major6', label: '腹膜刺激症状', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major7', label: '腸管損傷', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major8', label: '腹部膨隆', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major9', label: '内臓露出', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major10', label: '頸部又は胸部の皮下気腫', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major11', label: '血気胸疑', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major12', label: '外頸静脈の著しい怒張', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major13', label: 'デグロービング損傷', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major14', label: '１５％以上の熱傷を伴う外傷', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'inj_major15', label: '顔面熱傷・気道熱傷', level: 'C', colorZone: 'green', redFlag: true }
+          ]
+        },
+        {
+          id: 'fracture',
+          label: '骨折',
+          kind: 'multi',
+          options: [
+            { id: 'frac_none', label: 'なし', level: 'A', colorZone: 'white' },
+            { id: 'frac_closed1', label: '捻挫', level: 'B', colorZone: 'yellow' },
+            { id: 'frac_closed2', label: '腫脹', level: 'B', colorZone: 'yellow' },
+            { id: 'frac_closed3', label: '脱臼', level: 'B', colorZone: 'yellow' },
+            { id: 'frac_closed4', label: '変形', level: 'B', colorZone: 'yellow' },
+            { id: 'frac_closed5', label: '非開放', level: 'B', colorZone: 'yellow' },
+            { id: 'frac_open1', label: '陥没', level: 'C', colorZone: 'green' },
+            { id: 'frac_open2', label: '開放', level: 'C', colorZone: 'green' },
+            { id: 'frac_open3', label: '動揺', level: 'C', colorZone: 'green' },
+            { id: 'frac_open4', label: '軋音', level: 'C', colorZone: 'green' },
+            { id: 'frac_closed1', label: '鎖骨', level: 'B', colorZone: 'yellow' },
+            { id: 'frac_closed2', label: '肋骨', level: 'B', colorZone: 'yellow' },
+            { id: 'frac_major1', label: '頸損・脊損（胸・腰）', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'frac_major2', label: '胸壁運動の左右差', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'frac_major3', label: '胸郭動揺', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'frac_major4', label: '骨盤', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'frac_major5', label: '両側大腿骨', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'frac_major6', label: '顔面骨', level: 'C', colorZone: 'green', redFlag: true }
+          ]
+        },
+        {
+          id: 'mechanism',
+          label: '受傷機転（重症）',
+          kind: 'multi',
+          options: [
+            { id: 'mech_severe1', label: '頸部刺創', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe2', label: '胸腹部刺創、銃創', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe3', label: '高所墜落（約５ｍ以上の場合）', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe4', label: '機械器具に巻き込まれた', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe5', label: '頭、頸、体幹部が挟まれた', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe6', label: '車から放り出された', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe7', label: '同乗者の死亡', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe8', label: '救出に20分以上要した', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe9', label: '車の横転', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe10', label: '車が高度に損傷している', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe11', label: '車にひかれた', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe12', label: '５ｍ以上跳ね飛ばされた', level: 'C', colorZone: 'green', redFlag: true },
+            { id: 'mech_severe13', label: '受傷機転（転倒したバイクと運転者の距離、大。自動車が歩行者、自転車に衝突等）から重症と疑える場合', level: 'C', colorZone: 'green', redFlag: true }
+			  
+			  
+			  
+			  
+          ]
+        }
+      ]
+    },
+    {
+      id: 'notes',
+      mountId: 'notes',
+      title: '記事欄',
+      fields: [
+        { id: 'medication_history', label: '薬剤使用歴', kind: 'text' },
+        { id: 'last_oral_intake', label: '最終飲食時刻', kind: 'text' }
+      ]
+    }
+  ]
+};
+
+const state = {
+  values: {},
+  openGroups: {}
+};
+
+function getFieldById(fieldId) {
+  for (const section of schema.sections) {
+    for (const field of section.fields) {
+      if (field.id === fieldId) return field;
+    }
+  }
+  return null;
+}
+
+function getKindLabel(kind) {
+  if (kind === 'single') return '単一選択';
+  if (kind === 'multi') return '複数選択可';
+  if (kind === 'number') return '数値入力';
+  if (kind === 'number_free') return '数値入力';
+  if (kind === 'select') return '選択';
+  if (kind === 'text') return '自由入力';
+  return '';
+}
+
+function matchThreshold(value, rules) {
+  if (value === '' || value === null || value === undefined) return null;
+  const num = Number(value);
+  if (Number.isNaN(num)) return null;
+
+  return (rules || []).find(function(rule) {
+    const minOk = rule.min === null || rule.min === undefined ? true : num >= rule.min;
+    const maxOk = rule.max === null || rule.max === undefined ? true : num <= rule.max;
+    return minOk && maxOk;
+  }) || null;
+}
+
+function getEvaluation(field) {
+  const raw = state.values[field.id];
+
+  if (field.kind === 'multi') {
+    if (!raw || raw.length === 0) return null;
+
+    return raw.map(function(id) {
+      const found = field.options.find(function(opt) {
+        return opt.id === id;
+      });
+      if (!found) return null;
+
+      return {
+        fieldId: field.id,
+        fieldLabel: field.label,
+        inputType: field.kind,
+        selectedId: found.id,
+        selectedLabel: found.label,
+        level: found.level || null,
+        redFlag: !!found.redFlag,
+        colorZone: found.colorZone || null
+      };
+    }).filter(Boolean);
+  }
+
+  if (field.kind === 'single') {
+    if (!raw) return null;
+    const found = field.options.find(function(opt) {
+      return opt.id === raw;
+    });
+    if (!found) return null;
+
+    return {
+      fieldId: field.id,
+      fieldLabel: field.label,
+      inputType: field.kind,
+      selectedId: found.id,
+      selectedLabel: found.label,
+      level: found.level || null,
+      redFlag: !!found.redFlag,
+      colorZone: found.colorZone || null
+    };
+  }
+
+  if (field.kind === 'number') {
+    const modeKey = field.id + '__mode';
+    const modeVal = state.values[modeKey];
+
+    if (modeVal && field.extraOptions) {
+      const extra = field.extraOptions.find(function(opt) {
+        return opt.id === modeVal;
+      });
+      if (extra) {
+        return {
+          fieldId: field.id,
+          fieldLabel: field.label,
+          inputType: field.kind,
+          selectedId: extra.id,
+          selectedLabel: extra.label,
+          numericValue: null,
+          unit: field.unit || null,
+          level: extra.level || null,
+          redFlag: !!extra.redFlag,
+          colorZone: extra.colorZone || null
+        };
+      }
+    }
+
+    if (raw === '' || raw === undefined || raw === null) return null;
+
+    const ageBand = state.values.age_band || 'adult';
+    const rules = field.thresholdsByAge ? field.thresholdsByAge[ageBand] : field.thresholds;
+    const matched = matchThreshold(raw, rules);
+
+    if (!matched) {
+      return {
+        fieldId: field.id,
+        fieldLabel: field.label,
+        inputType: field.kind,
+        numericValue: Number(raw),
+        unit: field.unit || null,
+        selectedLabel: '閾値外',
+        level: null,
+        redFlag: false,
+        colorZone: null
+      };
+    }
+
+    return {
+      fieldId: field.id,
+      fieldLabel: field.label,
+      inputType: field.kind,
+      numericValue: Number(raw),
+      unit: field.unit || null,
+      selectedLabel: matched.label,
+      level: matched.level || null,
+      redFlag: !!matched.redFlag,
+      colorZone: matched.colorZone || null
+    };
+  }
+
+  if (field.kind === 'select') {
+    if (!raw) return null;
+    const found = field.options.find(function(opt) {
+      return opt.id === raw;
+    });
+    if (!found) return null;
+
+    return {
+      fieldId: field.id,
+      fieldLabel: field.label,
+      inputType: field.kind,
+      selectedId: found.id,
+      selectedLabel: found.label,
+      level: found.level || null,
+      redFlag: !!found.redFlag,
+      colorZone: found.colorZone || null
+    };
+  }
+
+  if (field.kind === 'number_free') {
+    if (raw === '' || raw === undefined || raw === null) return null;
+
+    return {
+      fieldId: field.id,
+      fieldLabel: field.label,
+      inputType: field.kind,
+      numericValue: Number(raw),
+      unit: field.unit || null,
+      selectedLabel: String(raw) + (field.unit || ''),
+      level: null,
+      redFlag: false,
+      colorZone: null
+    };
+  }
+
+  if (field.kind === 'text') {
+    if (!raw) return null;
+
+    return {
+      fieldId: field.id,
+      fieldLabel: field.label,
+      inputType: field.kind,
+      textValue: raw,
+      selectedLabel: raw,
+      level: null,
+      redFlag: false,
+      colorZone: null
+    };
+  }
+
+  return null;
+}
+
+function evaluateAll() {
+  const evaluations = [];
+
+  for (const section of schema.sections) {
+    for (const field of section.fields) {
+      const evaluated = getEvaluation(field);
+      if (Array.isArray(evaluated)) {
+        evaluations.push.apply(evaluations, evaluated);
+      } else if (evaluated) {
+        evaluations.push(evaluated);
+      }
+    }
+  }
+
+  return evaluations;
+}
+
+function summarizeResult(evaluations) {
+  const withLevel = evaluations.filter(function(v) {
+    return v.level;
+  });
+  const redFlags = withLevel.filter(function(v) {
+    return v.redFlag;
+  });
+  const cItems = withLevel.filter(function(v) {
+    return v.level === 'C';
+  });
+  const bItems = withLevel.filter(function(v) {
+    return v.level === 'B';
+  });
+
+  let level = 'A';
+  let reasons = [];
+
+  if (redFlags.length > 0) {
+    level = 'C';
+    reasons.push('赤枠条件に該当する入力があるためC');
+  } else if (cItems.length >= 2) {
+    level = 'C';
+    reasons.push('C相当の所見が複数あるためC');
+  } else if (cItems.length === 1 || bItems.length >= 3) {
+    level = 'B';
+    reasons.push('異常所見の集積によりB');
+  } else if (bItems.length >= 1) {
+    level = 'B';
+    reasons.push('注意所見があるためB');
+  } else {
+    level = 'A';
+    reasons.push('現時点で重大条件なし');
+  }
+
+  return {
+    level: level,
+    reasons: reasons,
+    redFlags: redFlags,
+    cItems: cItems,
+    bItems: bItems,
+    evaluations: withLevel
+  };
+}
+
+function createOptionButtonClass(option) {
+  return 'option zone-' + (option.colorZone || 'white') + (option.redFlag ? ' red-flag' : '');
+}
+
+function makeOptionButton(field, option) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = createOptionButtonClass(option);
+  button.dataset.fieldId = field.id;
+  button.dataset.optionId = option.id;
+  button.innerHTML = option.label + (option.level ? '<small>' + option.level + '</small>' : '');
+
+  button.addEventListener('click', function() {
+    const fid = field.id;
+    const oid = option.id;
+    const current = state.values[fid];
+
+    if (current === oid) {
+      delete state.values[fid];
+    } else {
+      state.values[fid] = oid;
+    }
+
+    updateUI();
+  });
+
+  return button;
+}
+
+function renderMultiChecklist(container, field) {
+  const groups = {
+    white: [],
+    yellow: [],
+    green: [],
+    redgreen: []
+  };
+
+  field.options.forEach(function(opt) {
+    if (opt.colorZone === 'white') {
+      groups.white.push(opt);
+    } else if (opt.colorZone === 'yellow') {
+      groups.yellow.push(opt);
+    } else if (opt.colorZone === 'green' && opt.redFlag) {
+      groups.redgreen.push(opt);
+    } else if (opt.colorZone === 'green') {
+      groups.green.push(opt);
+    } else {
+      groups.white.push(opt);
+    }
+  });
+
+  const defs = [
+    { key: 'white', label: '白', className: 'check-group-white' },
+    { key: 'yellow', label: '黄', className: 'check-group-yellow' },
+    { key: 'green', label: '緑', className: 'check-group-green' },
+    { key: 'redgreen', label: '赤枠緑', className: 'check-group-redgreen' }
+  ];
+
+  defs.forEach(function(def) {
+    const items = groups[def.key];
+    if (!items || items.length === 0) return;
+
+    const block = document.createElement('div');
+    block.className = 'check-group ' + def.className;
+
+    const title = document.createElement('div');
+    title.className = 'check-group-title';
+    title.textContent = def.label;
+    block.appendChild(title);
+
+    const list = document.createElement('div');
+    list.className = 'check-list';
+
+    items.forEach(function(opt) {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'check-row';
+      row.dataset.fieldId = field.id;
+      row.dataset.optionId = opt.id;
+
+      const mark = document.createElement('span');
+      mark.className = 'checkmark';
+      mark.textContent = '□';
+
+      const text = document.createElement('span');
+      text.className = 'check-label';
+      text.textContent = opt.label;
+
+      row.appendChild(mark);
+      row.appendChild(text);
+
+      row.addEventListener('click', function() {
+        const fid = field.id;
+        const oid = opt.id;
+
+        if (!state.values[fid]) state.values[fid] = [];
+
+        const index = state.values[fid].indexOf(oid);
+
+        if (index >= 0) {
+          state.values[fid].splice(index, 1);
+          if (state.values[fid].length === 0) {
+            delete state.values[fid];
+          }
+        } else {
+          state.values[fid].push(oid);
+        }
+
+        updateUI();
+      });
+
+      list.appendChild(row);
+    });
+
+    block.appendChild(list);
+    container.appendChild(block);
+  });
+}
+
+function renderField(container, field) {
+  const fieldEl = document.createElement('div');
+  fieldEl.className = 'field';
+
+  const head = document.createElement('div');
+  head.className = 'field-head';
+
+  const left = document.createElement('span');
+  left.textContent = field.label;
+
+  const rightWrap = document.createElement('span');
+  rightWrap.style.display = 'flex';
+  rightWrap.style.alignItems = 'center';
+  rightWrap.style.gap = '8px';
+
+  const meta = document.createElement('span');
+  meta.className = 'field-meta';
+  meta.textContent = getKindLabel(field.kind);
+
+  rightWrap.appendChild(meta);
+
+  let toggle = null;
+  if (field.kind === 'multi') {
+    const isOpen = !!state.openGroups[field.id];
+    toggle = document.createElement('span');
+    toggle.className = 'field-toggle';
+    toggle.textContent = isOpen ? '▾' : '▸';
+    rightWrap.appendChild(toggle);
+    head.style.cursor = 'pointer';
+
+    head.addEventListener('click', function() {
+      state.openGroups[field.id] = !state.openGroups[field.id];
+      updateUI();
+    });
+  }
+
+  head.appendChild(left);
+  head.appendChild(rightWrap);
+  fieldEl.appendChild(head);
+
+  const body = document.createElement('div');
+  body.className = 'field-body';
+
+  if (field.kind === 'multi') {
+    const isOpen = !!state.openGroups[field.id];
+    body.style.display = isOpen ? '' : 'none';
+    renderMultiChecklist(body, field);
+  }
+
+  if (field.kind === 'single') {
+    const options = document.createElement('div');
+    options.className = 'options';
+    field.options.forEach(function(option) {
+      options.appendChild(makeOptionButton(field, option));
+    });
+    body.appendChild(options);
+  }
+
+  if (field.kind === 'select') {
+    const wrap = document.createElement('div');
+    wrap.className = 'row';
+
+    const label = document.createElement('div');
+    label.textContent = '選択';
+
+    const select = document.createElement('select');
+    const empty = document.createElement('option');
+    empty.value = '';
+    empty.textContent = '選んでください';
+    select.appendChild(empty);
+
+    field.options.forEach(function(opt) {
+      const option = document.createElement('option');
+      option.value = opt.id;
+      option.textContent = opt.label;
+      select.appendChild(option);
+    });
+
+    select.addEventListener('change', function() {
+      if (select.value) {
+        state.values[field.id] = select.value;
+      } else {
+        delete state.values[field.id];
+      }
+      updateUI();
+    });
+
+    if (state.values[field.id]) {
+      select.value = state.values[field.id];
+    }
+
+    wrap.appendChild(label);
+    wrap.appendChild(select);
+    body.appendChild(wrap);
+  }
+
+  if (field.kind === 'number') {
+    const grid = document.createElement('div');
+    grid.className = 'num-grid';
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.placeholder = field.placeholder || '数値入力';
+    input.step = 'any';
+    if (state.values[field.id] !== undefined) {
+      input.value = state.values[field.id];
+    }
+
+    input.addEventListener('input', function() {
+      if (input.value === '') {
+        delete state.values[field.id];
+      } else {
+        state.values[field.id] = input.value;
+      }
+      const modeKey = field.id + '__mode';
+      delete state.values[modeKey];
+      updateUI();
+    });
+
+    const leftNum = document.createElement('div');
+    leftNum.textContent = field.unit ? '数値（' + field.unit + '）' : '数値';
+
+    grid.appendChild(leftNum);
+    grid.appendChild(input);
+    body.appendChild(grid);
+
+    if (field.extraOptions && field.extraOptions.length) {
+      const optWrap = document.createElement('div');
+      optWrap.className = 'options';
+      optWrap.style.marginTop = '10px';
+
+      field.extraOptions.forEach(function(opt) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = createOptionButtonClass(opt);
+        btn.dataset.fieldId = field.id;
+        btn.dataset.optionId = opt.id;
+        btn.textContent = opt.label;
+
+        btn.addEventListener('click', function() {
+          const key = field.id + '__mode';
+          const current = state.values[key];
+
+          if (current === opt.id) {
+            delete state.values[key];
+          } else {
+            state.values[key] = opt.id;
+            state.values[field.id] = '';
+          }
+
+          updateUI();
+        });
+
+        optWrap.appendChild(btn);
+      });
+
+      body.appendChild(optWrap);
+    }
+
+    const hint = document.createElement('div');
+    hint.className = 'hint';
+    hint.id = field.id + '__hint';
+    body.appendChild(hint);
+  }
+
+  if (field.kind === 'number_free') {
+    const grid = document.createElement('div');
+    grid.className = 'num-grid';
+
+    const leftFree = document.createElement('div');
+    leftFree.textContent = field.unit ? '数値（' + field.unit + '）' : '数値';
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.placeholder = field.placeholder || '';
+    input.step = 'any';
+    if (state.values[field.id] !== undefined) {
+      input.value = state.values[field.id];
+    }
+
+    input.addEventListener('input', function() {
+      if (input.value === '') {
+        delete state.values[field.id];
+      } else {
+        state.values[field.id] = input.value;
+      }
+      updateUI();
+    });
+
+    grid.appendChild(leftFree);
+    grid.appendChild(input);
+    body.appendChild(grid);
+  }
+
+  if (field.kind === 'text') {
+    const area = document.createElement('textarea');
+    area.placeholder = field.label;
+    if (state.values[field.id]) {
+      area.value = state.values[field.id];
+    }
+
+    area.addEventListener('input', function() {
+      if (area.value) {
+        state.values[field.id] = area.value;
+      } else {
+        delete state.values[field.id];
+      }
+      updateUI();
+    });
+
+    body.appendChild(area);
+  }
+
+  fieldEl.appendChild(body);
+  container.appendChild(fieldEl);
+}
+
+function renderAll() {
+  schema.sections.forEach(function(section) {
+    const mount = document.getElementById(section.mountId);
+    if (!mount) return;
+
+    mount.innerHTML = '';
+    section.fields.forEach(function(field) {
+      if (field.kind === 'multi' && typeof state.openGroups[field.id] === 'undefined') {
+        state.openGroups[field.id] = false;
+      }
+      renderField(mount, field);
+    });
+  });
+}
+
+function syncInputsFromState() {
+  schema.sections.forEach(function(section) {
+    section.fields.forEach(function(field) {
+      if (field.kind === 'single') {
+        document.querySelectorAll('.option[data-field-id="' + field.id + '"]').forEach(function(el) {
+          el.classList.toggle('selected', state.values[field.id] === el.dataset.optionId);
+        });
+      }
+
+      if (field.kind === 'multi') {
+        const selected = state.values[field.id] || [];
+
+        document.querySelectorAll('.check-row[data-field-id="' + field.id + '"]').forEach(function(el) {
+          const isSelected = selected.indexOf(el.dataset.optionId) >= 0;
+          el.classList.toggle('selected', isSelected);
+
+          const mark = el.querySelector('.checkmark');
+          if (mark) {
+            mark.textContent = isSelected ? '☑' : '□';
+          }
+        });
+      }
+
+      if (field.kind === 'number' && field.extraOptions) {
+        document.querySelectorAll('.option[data-field-id="' + field.id + '"]').forEach(function(el) {
+          const modeKey = field.id + '__mode';
+          el.classList.toggle('selected', state.values[modeKey] === el.dataset.optionId);
+        });
+      }
+    });
+  });
+}
+
+function updateNumberHints() {
+  schema.sections.forEach(function(section) {
+    section.fields.forEach(function(field) {
+      if (field.kind !== 'number') return;
+
+      const hint = document.getElementById(field.id + '__hint');
+      if (!hint) return;
+
+      const evaluated = getEvaluation(field);
+
+      if (!evaluated) {
+        if (field.thresholdsByAge) {
+          const ageBand = state.values.age_band || 'adult';
+          const ageBandItem = schema.ageBands.find(function(x) {
+            return x.id === ageBand;
+          });
+          const ageLabel = ageBandItem ? ageBandItem.label : '成人';
+          hint.textContent = ageLabel + 'の基準で判定';
+        } else {
+          hint.textContent = '入力すると自動判定';
+        }
+        return;
+      }
+
+      if (evaluated.numericValue !== undefined && evaluated.numericValue !== null) {
+        hint.textContent =
+          '判定帯: ' +
+          evaluated.selectedLabel +
+          (evaluated.level ? ' / ' + evaluated.level : '');
+      } else {
+        hint.textContent =
+          '判定: ' +
+          evaluated.selectedLabel +
+          (evaluated.level ? ' / ' + evaluated.level : '');
+      }
+    });
+  });
+}
+
+function updateResultPanel(summary) {
+  const resultLevel = document.getElementById('resultLevel');
+  resultLevel.textContent = summary.level;
+  resultLevel.className = 'result-level ' + String(summary.level).toLowerCase();
+
+  const reason = document.getElementById('resultReason');
+
+  let redText = '赤枠該当なし';
+  if (summary.redFlags.length > 0) {
+    redText = '赤枠: ' + summary.redFlags.map(function(x) {
+      return x.fieldLabel + '=' + x.selectedLabel;
+    }).join(' / ');
+  }
+
+  reason.innerHTML =
+    '<div>' + summary.reasons.join('・') + '</div>' +
+    '<div style="margin-top:8px;">' + redText + '</div>' +
+    '<div style="margin-top:8px;font-size:12px;color:#6b7280;">項目の総合判断ロジックは暫定。運用に合わせて要調整。</div>';
+
+  const selectedList = document.getElementById('selectedList');
+  selectedList.innerHTML = '';
+
+  summary.evaluations.forEach(function(item) {
+    const li = document.createElement('li');
+
+    let valueText = item.selectedLabel;
+    if (item.numericValue !== undefined && item.numericValue !== null) {
+      valueText = String(item.numericValue) + (item.unit || '') + ' → ' + item.selectedLabel;
+    }
+
+    li.textContent =
+      item.fieldLabel +
+      ': ' +
+      valueText +
+      (item.level ? ' [' + item.level + ']' : '') +
+      (item.redFlag ? ' ※赤枠' : '');
+
+    selectedList.appendChild(li);
+  });
+}
+
+function buildExportObject(summary) {
+  const fields = {};
+  schema.sections.forEach(function(section) {
+    section.fields.forEach(function(field) {
+      const evaluated = getEvaluation(field);
+      if (!evaluated) return;
+      fields[field.id] = evaluated;
+    });
+  });
+
+  return {
+    meta: schema.meta,
+    exportedAt: new Date().toISOString(),
+    overallResult: {
+      level: summary.level,
+      reasons: summary.reasons,
+      redFlags: summary.redFlags.map(function(x) {
+        return {
+          fieldId: x.fieldId,
+          fieldLabel: x.fieldLabel,
+          selectedLabel: x.selectedLabel
+        };
+      })
+    },
+    values: JSON.parse(JSON.stringify(state.values)),
+    evaluatedFields: fields
+  };
+}
+
+function updateUI() {
+  renderAll();
+  syncInputsFromState();
+  updateNumberHints();
+
+  const evaluations = evaluateAll();
+  const summary = summarizeResult(evaluations);
+  updateResultPanel(summary);
+
+  const out = document.getElementById('jsonOut');
+  if (out && !out.hidden) {
+    out.textContent = JSON.stringify(buildExportObject(summary), null, 2);
+  }
+}
+
+function exportJSON() {
+  const summary = summarizeResult(evaluateAll());
+  const out = document.getElementById('jsonOut');
+  if (!out) return;
+
+  out.hidden = false;
+  out.textContent = JSON.stringify(buildExportObject(summary), null, 2);
+}
+
+function resetAll() {
+  state.values = {};
+  document.querySelectorAll('input, textarea, select').forEach(function(el) {
+    el.value = '';
+  });
+
+  const out = document.getElementById('jsonOut');
+  if (out) {
+    out.hidden = true;
+    out.textContent = '';
+  }
+
+  updateUI();
+}
+
+const exportBtn = document.getElementById('exportBtn');
+if (exportBtn) {
+  exportBtn.addEventListener('click', exportJSON);
+}
+
+const resetBtn = document.getElementById('resetBtn');
+if (resetBtn) {
+  resetBtn.addEventListener('click', resetAll);
+}
+
+function updateResultPanelExpand() {
+  var panel = document.getElementById('resultPanel');
+  if (!panel) return;
+
+  var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+  var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+  var docHeight = Math.max(
+    document.body.scrollHeight,
+    document.documentElement.scrollHeight,
+    document.body.offsetHeight,
+    document.documentElement.offsetHeight
+  );
+
+  var currentBottom = scrollTop + viewportHeight;
+  var openThreshold = docHeight - 60;
+  var closeThreshold = docHeight - 180;
+
+  var isExpanded = panel.classList.contains('expanded');
+
+  if (!isExpanded && currentBottom >= openThreshold) {
+    panel.classList.add('expanded');
+  } else if (isExpanded && currentBottom < closeThreshold) {
+    panel.classList.remove('expanded');
+  }
+}
+
+window.addEventListener('scroll', updateResultPanelExpand);
+window.addEventListener('resize', updateResultPanelExpand);
+window.addEventListener('load', updateResultPanelExpand);
+
+function exportResultPDF() {
+  var resultPanel = document.getElementById('resultPanel');
+  if (!resultPanel) return;
+
+  var printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    alert('ポップアップがブロックされています');
+    return;
+  }
+
+  var html =
+    '<!DOCTYPE html>' +
+    '<html lang="ja">' +
+    '<head>' +
+    '<meta charset="UTF-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+    '<title>外傷観察カード 結果</title>' +
+    '<style>' +
+    '@page { size: A4; margin: 12mm; }' +
+    'body {' +
+      'font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;' +
+      'color: #111827;' +
+      'margin: 0;' +
+      'padding: 16px;' +
+      'background: #fff;' +
+    '}' +
+    '.print-wrap { width: 100%; }' +
+    '.panel {' +
+      'border: 2px solid #111827;' +
+      'border-radius: 16px;' +
+      'padding: 16px;' +
+      'box-shadow: none;' +
+      'background: #fff;' +
+    '}' +
+    '.result-main {' +
+      'font-size: 14px;' +
+      'color: #6b7280;' +
+    '}' +
+    '.result-level {' +
+      'margin-top: 8px;' +
+      'font-size: 48px;' +
+      'font-weight: 900;' +
+      'border: 2px solid #111827;' +
+      'border-radius: 16px;' +
+      'padding: 12px 0;' +
+      'text-align: center;' +
+    '}' +
+    '.result-level.a { background: #f3f4f6; }' +
+    '.result-level.b { background: #fff36a; }' +
+    '.result-level.c { background: #48ff48; }' +
+    '.summary-box {' +
+      'margin-top: 12px;' +
+      'padding: 12px;' +
+      'border: 1px solid #d1d5db;' +
+      'border-radius: 12px;' +
+      'background: #fafafa;' +
+      'font-size: 14px;' +
+      'line-height: 1.6;' +
+    '}' +
+    '.selected-list {' +
+      'margin: 12px 0 0;' +
+      'padding-left: 18px;' +
+      'font-size: 14px;' +
+      'line-height: 1.5;' +
+    '}' +
+    '.selected-list li {' +
+      'margin-bottom: 6px;' +
+    '}' +
+    '.actions, #jsonOut, button { display: none !important; }' +
+    '</style>' +
+    '</head>' +
+    '<body>' +
+    '<div class="print-wrap">' +
+    resultPanel.outerHTML +
+    '</div>' +
+    '</body>' +
+    '</html>';
+
+  printWindow.document.open();
+  printWindow.document.write(html);
+  printWindow.document.close();
+
+  setTimeout(function () {
+    printWindow.focus();
+    printWindow.print();
+  }, 500);
+}
+var pdfBtn = document.getElementById('pdfBtn');
+if (pdfBtn) {
+  pdfBtn.addEventListener('click', exportResultPDF);
+}
+renderAll();
+updateUI();
+</script>
+</body>
+</html>
