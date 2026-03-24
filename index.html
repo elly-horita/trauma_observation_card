@@ -153,6 +153,13 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 16px;
+    padding-bottom: 180px;
+  }
+
+  @media (max-width: 920px) {
+    .content {
+      padding-bottom: 260px;
+    }
   }
   .section-title {
     margin: 0 0 12px;
@@ -198,7 +205,7 @@
   }
   .options {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 8px;
   }
   .option {
@@ -352,6 +359,25 @@
     overflow: auto;
   }
 	
+.field-help {
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.help-content {
+  margin: 10px 12px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.help-row {
+  margin-bottom: 4px;
+}
   @media (max-width: 920px) {
     .topbar { grid-template-columns: 1fr; }
     .row, .num-grid { grid-template-columns: 1fr; }
@@ -471,454 +497,475 @@ const schema = {
           kind: 'select',
           required: true,
           options: [
-            { id: 'adult', label: '成人' },
+            { id: 'adult', label: '成人', help: '概ね15歳以上' },
             { id: 'age_6_to_15', label: '6歳以上15歳未満' },
             { id: 'age_3_to_6', label: '3歳以上6歳未満' },
             { id: 'age_1_to_3', label: '1歳以上3歳未満' },
-            { id: 'under_1', label: '1歳未満' }
+            { id: 'under_1', label: '1歳未満', help: '概ね乳児' }
           ]
         }
       ]
     },
+{
+  id: 'appearance',
+  mountId: 'appearance',
+  title: '外見',
+  fields: [
     {
-      id: 'appearance',
-      mountId: 'appearance',
-      title: '外見',
-      fields: [
-        {
-          id: 'general_state',
-          label: '状態',
-          kind: 'single',
-          options: [
-            { id: 'walkable', label: '歩行可能', level: 'A', colorZone: 'white' },
-            { id: 'unable_to_walk', label: '仰/側/腹/坐/その他', level: 'A', colorZone: 'white' },
-            { id: 'collapse', label: '虚脱', level: 'C', colorZone: 'green', redFlag: true }
-          ]
-        },
-        {
-          id: 'face_color',
-          label: '顔色',
-          kind: 'single',
-          options: [
-            { id: 'face_normal', label: '正常', level: 'A', colorZone: 'white' },
-            { id: 'face_flush', label: '黄・紅潮', level: 'B', colorZone: 'yellow' },
-            { id: 'face_cyanosis', label: '土気色', level: 'C', colorZone: 'green', redFlag: false },
-            { id: 'face_cyanosis_red', label: '蒼白・チアノーゼ', level: 'C', colorZone: 'green', redFlag: true }			  
-          ]
-        },
-        {
-          id: 'expression',
-          label: '表情',
-          kind: 'single',
-          options: [
-            { id: 'expr_normal', label: '正常', level: 'A', colorZone: 'white' },
-            { id: 'expr_agitated', label: '興奮・不安・苦悶', level: 'B', colorZone: 'yellow' },
-            { id: 'expr_blank', label: '無表情・うつろ', level: 'C', colorZone: 'green', redFlag: true }
-          ]
-        },
-        {
-          id: 'vomit_incontinence',
-          label: '嘔吐・失禁',
-          kind: 'single',
-          options: [
-            { id: 'vomit_none', label: 'なし', level: 'A', colorZone: 'white' },
-            { id: 'vomit_yes', label: '嘔気・嘔吐・吐血・喀血', level: 'B', colorZone: 'yellow' },
-            { id: 'incontinence', label: '失禁（大・小）', level: 'C', colorZone: 'green', redFlag: false }
-          ]
-        },
-        {
-          id: 'skin_temp',
-          label: '皮膚・体温等',
-          kind: 'single',
-          options: [
-            { id: 'skin_normal', label: '正常', level: 'A', colorZone: 'white' },
-            { id: 'skin_warn', label: '乾燥・発熱・湿潤・発汗・浮腫', level: 'B', colorZone: 'yellow' },
-            { id: 'skin_cold_red', label: '冷汗', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'skin_cold', label: '冷感', level: 'C', colorZone: 'green', redFlag: false }
-          ]
-        },
-        {
-          id: 'onjunctiva_nailbed_extremities',
-          label: '眼瞼結膜・爪床・四肢末梢',
-          kind: 'single',
-          options: [
-            { id: 'peripheral_normal', label: '正常', level: 'A', colorZone: 'white' },
-            { id: 'peripheral_pale', label: '蒼白・チアノーゼ', level: 'C', colorZone: 'green', redFlag: false }
-          ]
-        }
+      id: 'general_state',
+      label: '状態',
+      kind: 'single',
+      options: [
+        { id: 'walkable', label: '歩行可能', level: 'A', colorZone: 'white', help: '自力で歩ける状態' },
+        { id: 'unable_to_walk', label: '仰/側/腹/坐/その他', level: 'A', colorZone: 'white', help: '自力歩行できず姿勢を取っている' },
+        { id: 'collapse', label: '虚脱', level: 'C', colorZone: 'green', redFlag: true, help: 'ぐったりして力が入らない' }
       ]
     },
     {
-      id: 'vitals',
-      mountId: 'vitals',
-      title: 'バイタルサイン',
-      fields: [
-        {
-          id: 'consciousness',
-          label: '意識',
-          kind: 'single',
-          options: [
-            { id: 'cons_clear', label: '清明', level: 'A', colorZone: 'white' },
-            { id: 'cons_b', label: '1・2・3・10', level: 'B', colorZone: 'yellow' },
-            { id: 'cons_c', label: '20・30・100・200・300', level: 'C', colorZone: 'green', redFlag: true }
-          ]
-        },
-        {
-          id: 'resp_quality',
-          label: '呼吸・性状',
-          kind: 'single',
-          options: [
-            { id: 'resp_q_normal', label: '正常', level: 'A', colorZone: 'white' },
-            { id: 'resp_q_warn', label: '浅・深・喘鳴', level: 'B', colorZone: 'yellow' },
-            { id: 'resp_q_abnormal', label: '異常・呼吸なし', level: 'C', colorZone: 'green', redFlag: true }
-          ]
-        },
-        {
-          id: 'resp_rate',
-          label: '呼吸数（回/分）',
-          kind: 'number',
-          unit: '回/分',
-          placeholder: '数値入力',
-          thresholdsByAge: {
-            adult: [
-              { min: 16, max: 19, level: 'A', label: '16〜19' },
-              { min: 20, max: 29, level: 'B', label: '20〜29' },
-              { min: 10, max: 15, level: 'B', label: '10〜15' },
-              { min: null, max: 9, level: 'C', label: '10未満', redFlag: true },
-              { min: 30, max: null, level: 'C', label: '30以上', redFlag: true }
-            ],
-            age_6_to_15: [
-              { min: 15, max: 30, level: 'A', label: '15〜30' },
-              { min: null, max: 14, level: 'C', label: '15未満', redFlag: true },
-              { min: 31, max: null, level: 'C', label: '31以上', redFlag: true }
-            ],
-            age_3_to_6: [
-              { min: 20, max: 30, level: 'A', label: '20〜30' },
-              { min: null, max: 19, level: 'C', label: '20未満', redFlag: true },
-              { min: 31, max: null, level: 'C', label: '31以上', redFlag: true }
-            ],
-            age_1_to_3: [
-              { min: 20, max: 40, level: 'A', label: '20〜40' },
-              { min: null, max: 19, level: 'C', label: '20未満', redFlag: true },
-              { min: 41, max: null, level: 'C', label: '41以上', redFlag: true }
-            ],
-            under_1: [
-              { min: 30, max: 60, level: 'A', label: '30〜60' },
-              { min: null, max: 29, level: 'C', label: '30未満', redFlag: true },
-              { min: 61, max: null, level: 'C', label: '61以上', redFlag: true }
-            ]
-          }
-        },
-        {
-          id: 'breath_sound',
-          label: '呼吸音',
-          kind: 'single',
-          options: [
-            { id: 'resp_q_normal', label: '正常', level: 'A', colorZone: 'white' },
-            { id: 'resp_q_lr_none', label: '左右差なし', level: 'B', colorZone: 'yellow' },
-            { id: 'resp_q_lr_yes', label: '左右差あり', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'resp_q_dry', label: '乾性ラ音', level: 'C', colorZone: 'green', redFlag: false },
-            { id: 'resp_q_wet', label: '湿性ラ音', level: 'C', colorZone: 'green', redFlag: false },
-            { id: 'resp_q_stenosis', label: '狭窄音', level: 'C', colorZone: 'green', redFlag: false }
-          ]
-        },
-        {
-          id: 'pulse_tension',
-          label: '緊張度',
-          kind: 'single',
-          options: [
-            { id: 'pulse_tnormal', label: '正常', level: 'A', colorZone: 'white' },
-            { id: 'pulse_t_strong', label: '強', level: 'B', colorZone: 'yellow' },
-            { id: 'pulse_t_weak', label: '弱', level: 'B', colorZone: 'yellow' },
-            { id: 'pulse_t_lrdeffnone', label: '左右差なし', level: 'B', colorZone: 'yellow' },
-            { id: 'tpulse_t_lrdeffyes', label: '左右差あり', level: 'B', colorZone: 'yellow' },
-            { id: 'pulse_t_veryweak', label: '微弱', level: 'C', colorZone: 'green', redFlag: false }
-          ]
-        },
-        {
-          id: 'pulse_rhythm',
-          label: 'リズム',
-          kind: 'single',
-          options: [
-            { id: 'pulse_rhythm_regular', label: '整', level: 'A', colorZone: 'white' },
-            { id: 'pulse_rhythm_irregular', label: '不脈', level: 'C', colorZone: 'green', redFlag: false },
-            { id: 'pulse_rhythm_no_carotid', label: '総頸触れず', level: 'C', colorZone: 'green', redFlag: true }
-          ]
-        },
-        {
-          id: 'pulse_rate',
-          label: '脈拍数（回/分）',
-          kind: 'number',
-          unit: '回/分',
-          placeholder: '数値入力',
-          thresholdsByAge: {
-            adult: [
-              { min: 50, max: 100, level: 'A', label: '50〜100' },
-              { min: 101, max: 109, level: 'B', label: '101〜109' },
-              { min: null, max: 49, level: 'C', label: '50未満', redFlag: true },
-              { min: 120, max: null, level: 'C', label: '120以上', redFlag: true }
-            ],
-            age_6_to_15: [
-              { min: 60, max: 110, level: 'A', label: '60〜110' },
-              { min: null, max: 59, level: 'C', label: '60未満', redFlag: true },
-              { min: 111, max: null, level: 'C', label: '111以上', redFlag: true }
-            ],
-            age_3_to_6: [
-              { min: 70, max: 110, level: 'A', label: '70〜110' },
-              { min: null, max: 69, level: 'C', label: '70未満', redFlag: true },
-              { min: 111, max: null, level: 'C', label: '111以上', redFlag: true }
-            ],
-            age_1_to_3: [
-              { min: 80, max: 130, level: 'A', label: '80〜130' },
-              { min: null, max: 79, level: 'C', label: '80未満', redFlag: true },
-              { min: 131, max: null, level: 'C', label: '131以上', redFlag: true }
-            ],
-            under_1: [
-              { min: 80, max: 160, level: 'A', label: '80〜160' },
-              { min: null, max: 79, level: 'C', label: '80未満', redFlag: true },
-              { min: 161, max: null, level: 'C', label: '161以上', redFlag: true }
-            ]
-          }
-        },
-        {
-          id: 'systolic_bp',
-          label: '収縮期血圧',
-          kind: 'number',
-          unit: 'mmHg',
-          placeholder: '数値入力',
-          thresholds: [
-            { min: 90, max: 140, level: 'A', label: '90〜140' },
-            { min: 141, max: 199, level: 'B', label: '141〜199' },
-            { min: null, max: 89, level: 'C', label: '90未満', redFlag: true },
-            { min: 200, max: null, level: 'C', label: '200以上' }
-          ],
-          extraOptions: [
-            { id: 'bp_unmeasurable', label: '測定不能', level: 'C', colorZone: 'green', redFlag: true }
-          ]
-        },
-        {
-          id: 'spo2',
-          label: 'SpO₂',
-          kind: 'number',
-          unit: '%',
-          placeholder: '数値入力',
-          thresholds: [
-            { min: 93, max: 100, level: 'A', label: '93%以上' },
-            { min: 90, max: 92, level: 'B', label: '90〜92%' },
-            { min: null, max: 89, level: 'C', label: '90%未満', redFlag: true }
-          ]
-        },
-        {
-          id: 'pupil_reflex',
-          label: '瞳孔反射',
-          kind: 'single',
-          options: [
-            { id: 'pupil_ref_normal', label: '正常', level: 'A', colorZone: 'white' },
-            { id: 'pupil_ref_slow', label: 'にぶい', level: 'B', colorZone: 'yellow' },
-            { id: 'pupil_ref_none', label: 'なし', level: 'C', colorZone: 'green' }
-          ]
-        },
-        {
-          id: 'pupil_left',
-          label: '瞳孔径 左',
-          kind: 'number_free',
-          unit: 'mm',
-          placeholder: '1〜8程度'
-        },
-        {
-          id: 'pupil_right',
-          label: '瞳孔径 右',
-          kind: 'number_free',
-          unit: 'mm',
-          placeholder: '1〜8程度'
-        },
-        {
-          id: 'prejudice',
-          label: '偏視',
-          kind: 'single',
-          options: [
-            { id: 'prejudice_normal', label: 'なし', level: 'A', colorZone: 'white' },
-            { id: 'prejudice_lr', label: '左・右', level: 'C', colorZone: 'green' },
-            { id: 'prejudice_tb', label: '上・下', level: 'C', colorZone: 'green' },
-            { id: 'prejudice_di', label: '斜め', level: 'C', colorZone: 'green' },
-            { id: 'prejudice_joint', label: '共同偏視', level: 'C', colorZone: 'green' }
-          ]
-        },
+      id: 'face_color',
+      label: '顔色',
+      kind: 'single',
+      options: [
+        { id: 'face_normal', label: '正常', level: 'A', colorZone: 'white', help: '皮膚色に大きな異常なし' },
+        { id: 'face_flush1', label: '黄潮', level: 'B', colorZone: 'yellow', help: '黄色みが強く見える' },
+        { id: 'face_flush2', label: '紅潮', level: 'B', colorZone: 'yellow', help: '赤みが強く見える' },
+        { id: 'face_cyanosis', label: '土気色', level: 'C', colorZone: 'green', redFlag: false, help: '灰色っぽく血色が悪い' },
+        { id: 'face_cyanosis_red', label: '蒼白', level: 'C', colorZone: 'green', redFlag: true, help: '血の気が引き血流や血圧低下を疑う' },
+        { id: 'face_cyanosis_red', label: 'チアノーゼ', level: 'C', colorZone: 'green', redFlag: true, help: '口唇や爪が青紫で酸素不足や循環不全を疑う' }
       ]
     },
     {
-      id: 'local',
-      mountId: 'local',
-      title: '主訴・局所状態',
-      fields: [
-        {
-          id: 'convulsion',
-          label: '痙攣等',
-          kind: 'multi',
-          options: [
-            { id: 'convulsion_related_none', label: 'なし', level: 'A', colorZone: 'white' },
-            { id: 'convulsion_related_tremor1', label: 'ふるえ', level: 'B', colorZone: 'yellow' },
-            { id: 'convulsion_related_tremor2', label: '弛緩', level: 'B', colorZone: 'yellow' },
-            { id: 'convulsion_related_tremor3', label: '痙攣（局所間代）', level: 'B', colorZone: 'yellow' },
-            { id: 'convulsion_related_tonic', label: '全身硬直', level: 'C', colorZone: 'green', redFlag: false },
-            { id: 'convulsion_related_numbness1', label: 'しびれ', level: 'B', colorZone: 'yellow' },
-            { id: 'convulsion_related_numbness2', label: '悪寒', level: 'B', colorZone: 'yellow' },
-            { id: 'convulsion_related_numbness3', label: 'めいまい', level: 'B', colorZone: 'yellow' },
-            { id: 'convulsion_related_numbness4', label: '耳鳴', level: 'B', colorZone: 'yellow' },
-            { id: 'convulsion_related_numbness5', label: '動機', level: 'B', colorZone: 'yellow' },
-            { id: 'convulsion_related_chest_distress', label: '脱力感', level: 'C', colorZone: 'green', redFlag: false },
-            { id: 'convulsion_related_chest_distress2', label: '胸内苦悶', level: 'C', colorZone: 'green', redFlag: false }
-          ]
-        },
-        {
-          id: 'paralysis',
-          label: '麻痺',
-          kind: 'multi',
-          options: [
-            { id: 'para_none', label: 'なし', level: 'A', colorZone: 'white' },
-            { id: 'para_lang', label: '言語', level: 'B', colorZone: 'yellow' },
-            { id: 'para_lang', label: '知覚', level: 'B', colorZone: 'yellow' },
-            { id: 'para_motor', label: '運動（上肢）', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'para_motor', label: '運動（下肢）', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'para_motor', label: '運動（片側）', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'para_motor', label: '運動（上半身）', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'para_motor', label: '運動（下半身）', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'para_motor', label: '運動（全麻痺）', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'para_decerebrate', label: '除脳硬直', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'para_decerebrate', label: '除皮質硬直', level: 'C', colorZone: 'green', redFlag: true }
-          ]
-        },
-        {
-          id: 'parts',
-          label: '部位',
-          kind: 'multi',
-          options: [
-            { id: 'parts1', label: '頭', level: 'A', colorZone: 'white' },
-            { id: 'parts2', label: '顔', level: 'A', colorZone: 'white' },
-            { id: 'parts3', label: '眼', level: 'A', colorZone: 'white' },
-            { id: 'parts4', label: '鼻', level: 'A', colorZone: 'white' },
-            { id: 'parts5', label: '口', level: 'A', colorZone: 'white' },
-            { id: 'parts6', label: '耳', level: 'A', colorZone: 'white' },
-            { id: 'parts7', label: '頸', level: 'A', colorZone: 'white' },
-            { id: 'parts8', label: '肩', level: 'A', colorZone: 'white' },
-            { id: 'parts9', label: '胸', level: 'A', colorZone: 'white' },
-            { id: 'parts10', label: '腹', level: 'A', colorZone: 'white' },
-            { id: 'parts11', label: '腰', level: 'A', colorZone: 'white' },
-            { id: 'parts12', label: '背', level: 'A', colorZone: 'white' },
-            { id: 'parts13', label: '臀', level: 'A', colorZone: 'white' },
-            { id: 'parts14', label: '陰', level: 'A', colorZone: 'white' },
-            { id: 'parts15', label: '前額', level: 'A', colorZone: 'white' },
-            { id: 'parts16', label: '前胸部', level: 'A', colorZone: 'white' },
-            { id: 'parts17', label: '上腹部', level: 'A', colorZone: 'white' },
-          ]
-        },
-        {
-          id: 'pain',
-          label: '痛み',
-          kind: 'multi',
-          options: [
-            { id: 'pain_none', label: 'なし', level: 'A', colorZone: 'white' },
-            { id: 'pain_warn', label: '鈍痛・激痛', level: 'B', colorZone: 'yellow' },
-            { id: 'pain_warn', label: '限局・放散', level: 'B', colorZone: 'yellow' },
-            { id: 'pain_warn', label: '間歇・持続', level: 'B', colorZone: 'yellow' }
-          ]
-        },
-        {
-          id: 'bleeding',
-          label: '出血',
-          kind: 'multi',
-          options: [
-            { id: 'bleed_none', label: 'なし', level: 'A', colorZone: 'white' },
-            { id: 'bleed_small', label: '少', level: 'B', colorZone: 'yellow' },
-            { id: 'bleed_large', label: '中', level: 'C', colorZone: 'green' },
-            { id: 'bleed_large', label: '多', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'bleed_csf', label: '髄液（耳・鼻）漏', level: 'C', colorZone: 'green', redFlag: true }
-          ]
-        },
-        {
-          id: 'injury_type',
-          label: '創傷等',
-          kind: 'multi',
-          options: [
-            { id: 'inj_none', label: 'なし', level: 'A', colorZone: 'white' },
-            { id: 'inj_surface1', label: '擦過傷', level: 'B', colorZone: 'yellow' },
-            { id: 'inj_surface2', label: '打撲', level: 'B', colorZone: 'yellow' },  
-            { id: 'inj_surface3', label: '咬創', level: 'B', colorZone: 'yellow' },
-            { id: 'inj_surface4', label: '切創', level: 'B', colorZone: 'yellow' },
-            { id: 'inj_surface5', label: '割創', level: 'B', colorZone: 'yellow' },  
-            { id: 'inj_surface6', label: '挫滅創', level: 'B', colorZone: 'yellow' },
-            { id: 'inj_penetrating', label: '刺創', level: 'C', colorZone: 'green' },
-            { id: 'inj_penetrating', label: '杙創', level: 'C', colorZone: 'green' },
-            { id: 'inj_penetrating', label: '切断', level: 'C', colorZone: 'green' },
-            { id: 'inj_penetrating', label: '轢断', level: 'C', colorZone: 'green' },
-            { id: 'inj_major1', label: '頭・頸・胸・腹・鼠頸部への穿通性外傷', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major2', label: 'フレイルチェスト', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major3', label: '多指切断', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major4', label: '四肢の切断', level: 'C', colorZone: 'green', redFlag: true },	  
-            { id: 'inj_major5', label: '腹壁緊張', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major6', label: '腹膜刺激症状', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major7', label: '腸管損傷', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major8', label: '腹部膨隆', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major9', label: '内臓露出', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major10', label: '頸部又は胸部の皮下気腫', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major11', label: '血気胸疑', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major12', label: '外頸静脈の著しい怒張', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major13', label: 'デグロービング損傷', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major14', label: '１５％以上の熱傷を伴う外傷', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'inj_major15', label: '顔面熱傷・気道熱傷', level: 'C', colorZone: 'green', redFlag: true }
-          ]
-        },
-        {
-          id: 'fracture',
-          label: '骨折',
-          kind: 'multi',
-          options: [
-            { id: 'frac_none', label: 'なし', level: 'A', colorZone: 'white' },
-            { id: 'frac_closed1', label: '捻挫', level: 'B', colorZone: 'yellow' },
-            { id: 'frac_closed2', label: '腫脹', level: 'B', colorZone: 'yellow' },
-            { id: 'frac_closed3', label: '脱臼', level: 'B', colorZone: 'yellow' },
-            { id: 'frac_closed4', label: '変形', level: 'B', colorZone: 'yellow' },
-            { id: 'frac_closed5', label: '非開放', level: 'B', colorZone: 'yellow' },
-            { id: 'frac_open1', label: '陥没', level: 'C', colorZone: 'green' },
-            { id: 'frac_open2', label: '開放', level: 'C', colorZone: 'green' },
-            { id: 'frac_open3', label: '動揺', level: 'C', colorZone: 'green' },
-            { id: 'frac_open4', label: '軋音', level: 'C', colorZone: 'green' },
-            { id: 'frac_closed1', label: '鎖骨', level: 'B', colorZone: 'yellow' },
-            { id: 'frac_closed2', label: '肋骨', level: 'B', colorZone: 'yellow' },
-            { id: 'frac_major1', label: '頸損・脊損（胸・腰）', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'frac_major2', label: '胸壁運動の左右差', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'frac_major3', label: '胸郭動揺', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'frac_major4', label: '骨盤', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'frac_major5', label: '両側大腿骨', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'frac_major6', label: '顔面骨', level: 'C', colorZone: 'green', redFlag: true }
-          ]
-        },
-        {
-          id: 'mechanism',
-          label: '受傷機転（重症）',
-          kind: 'multi',
-          options: [
-            { id: 'mech_severe1', label: '頸部刺創', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe2', label: '胸腹部刺創、銃創', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe3', label: '高所墜落（約５ｍ以上の場合）', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe4', label: '機械器具に巻き込まれた', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe5', label: '頭、頸、体幹部が挟まれた', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe6', label: '車から放り出された', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe7', label: '同乗者の死亡', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe8', label: '救出に20分以上要した', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe9', label: '車の横転', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe10', label: '車が高度に損傷している', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe11', label: '車にひかれた', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe12', label: '５ｍ以上跳ね飛ばされた', level: 'C', colorZone: 'green', redFlag: true },
-            { id: 'mech_severe13', label: '受傷機転（転倒したバイクと運転者の距離、大。自動車が歩行者、自転車に衝突等）から重症と疑える場合', level: 'C', colorZone: 'green', redFlag: true }
-			  
-			  
-			  
-			  
-          ]
-        }
+      id: 'expression',
+      label: '表情',
+      kind: 'single',
+      options: [
+        { id: 'expr_normal', label: '正常', level: 'A', colorZone: 'white', help: '表情に目立つ異常なし' },
+        { id: 'expr_agitated1', label: '興奮', level: 'B', colorZone: 'yellow', help: '落ち着かず高ぶっている' },
+        { id: 'expr_agitated2', label: '不安', level: 'B', colorZone: 'yellow', help: '強い不安が表情に出る' },
+        { id: 'expr_agitated3', label: '苦悶', level: 'B', colorZone: 'yellow', help: '苦しさで顔をしかめる' },
+        { id: 'expr_blank1', label: '無表情', level: 'C', colorZone: 'green', redFlag: true, help: '反応乏しく表情変化が少ない' },
+        { id: 'expr_blank2', label: 'うつろ', level: 'C', colorZone: 'green', redFlag: true, help: '視線や反応がぼんやりしている' }
       ]
     },
+    {
+      id: 'vomit_incontinence',
+      label: '嘔吐・失禁',
+      kind: 'single',
+      options: [
+        { id: 'vomit_none', label: 'なし', level: 'A', colorZone: 'white', help: '嘔吐や失禁を認めない' },
+        { id: 'vomit_yes1', label: '嘔気', level: 'B', colorZone: 'yellow', help: '吐き気を訴える' },
+        { id: 'vomit_yes2', label: '嘔吐', level: 'B', colorZone: 'yellow', help: '実際に吐いている' },
+        { id: 'vomit_yes3', label: '吐血', level: 'B', colorZone: 'yellow', help: '口から血を吐く' },
+        { id: 'vomit_yes4', label: '喀血', level: 'B', colorZone: 'yellow', help: '咳とともに血が出る' },
+        { id: 'incontinence', label: '失禁（大・小）', level: 'C', colorZone: 'green', redFlag: false, help: '便や尿が漏れている' }
+      ]
+    },
+    {
+      id: 'skin_temp',
+      label: '皮膚・体温等',
+      kind: 'single',
+      options: [
+        { id: 'skin_normal', label: '正常', level: 'A', colorZone: 'white', help: '皮膚状態に異常なし' },
+        { id: 'skin_warn1', label: '乾燥', level: 'B', colorZone: 'yellow', help: '皮膚が乾いている' },
+        { id: 'skin_warn2', label: '発熱', level: 'B', colorZone: 'yellow', help: '熱感や体温上昇がある' },
+        { id: 'skin_warn3', label: '湿潤', level: 'B', colorZone: 'yellow', help: '皮膚が湿っている' },
+        { id: 'skin_warn4', label: '発汗', level: 'B', colorZone: 'yellow', help: '汗をかいている' },
+        { id: 'skin_warn5', label: '浮腫', level: 'B', colorZone: 'yellow', help: '腫れぼったくむくんでいる' },
+        { id: 'skin_cold_red', label: '冷汗', level: 'C', colorZone: 'green', redFlag: true, help: '冷たい汗をかいている' },
+        { id: 'skin_cold', label: '冷感', level: 'C', colorZone: 'green', redFlag: false, help: '皮膚が冷たく感じる' }
+      ]
+    },
+    {
+      id: 'onjunctiva_nailbed_extremities',
+      label: '眼瞼結膜・爪床・四肢末梢',
+      kind: 'single',
+      options: [
+        { id: 'peripheral_normal', label: '正常', level: 'A', colorZone: 'white', help: '末梢循環に目立つ異常なし' },
+        { id: 'peripheral_pale', label: '蒼白・チアノーゼ', level: 'C', colorZone: 'green', redFlag: false, help: '末梢が白い・青紫に見える' }
+      ]
+    }
+  ]
+},
+{
+  id: 'vitals',
+  mountId: 'vitals',
+  title: 'バイタルサイン',
+  fields: [
+    {
+      id: 'consciousness',
+      label: '意識',
+      kind: 'single',
+      options: [
+        { id: 'cons_clear', label: '清明', level: 'A', colorZone: 'white', help: '完全に覚醒している' },
+        { id: 'cons_b1', label: '1', level: 'B', colorZone: 'yellow', help: '見当識は保たれているが意識清明ではない' },
+        { id: 'cons_b2', label: '2', level: 'B', colorZone: 'yellow', help: '見当識障害がある' },
+        { id: 'cons_b3', label: '3', level: 'B', colorZone: 'yellow', help: '自分の名前・生年月日が言えない' },
+        { id: 'cons_b10', label: '10', level: 'B', colorZone: 'yellow', help: '普通の呼びかけで開眼' },
+        { id: 'cons_c20', label: '20', level: 'C', colorZone: 'green', redFlag: true, help: '大声で呼びかけたり強く揺するなどで開眼' },
+        { id: 'cons_c30', label: '30', level: 'C', colorZone: 'green', redFlag: true, help: '痛み刺激を加えつつ呼びかけを続けると開眼' },
+        { id: 'cons_c100', label: '100', level: 'C', colorZone: 'green', redFlag: true, help: '痛み刺激に対し払いのけるなどの動作をする' },
+        { id: 'cons_c200', label: '200', level: 'C', colorZone: 'green', redFlag: true, help: '痛み刺激で少し手足を動かしたり顔をしかめたりする' },
+        { id: 'cons_c300', label: '300', level: 'C', colorZone: 'green', redFlag: true, help: '痛み刺激に対して全く反応しない' },
+      ]
+    },
+    {
+      id: 'resp_quality',
+      label: '呼吸・性状',
+      kind: 'single',
+      options: [
+        { id: 'resp_q_normal', label: '正常', level: 'A', colorZone: 'white', help: '規則的で安定している' },
+        { id: 'resp_q_warn', label: '浅・深・喘鳴', level: 'B', colorZone: 'yellow', help: '深さや音に異常がある' },
+        { id: 'resp_q_abnormal', label: '異常・呼吸なし', level: 'C', colorZone: 'green', redFlag: true, help: '著しい異常または無呼吸' }
+      ]
+    },
+    {
+      id: 'resp_rate',
+      label: '呼吸数（回/分）',
+      kind: 'number',
+      unit: '回/分',
+      placeholder: '数値入力',
+      help: '年齢区分ごとの基準で自動判定',
+      thresholdsByAge: {
+        adult: [
+          { min: 16, max: 19, level: 'A', label: '16〜19' },
+          { min: 20, max: 29, level: 'B', label: '20〜29' },
+          { min: 10, max: 15, level: 'B', label: '10〜15' },
+          { min: null, max: 9, level: 'C', label: '10未満', redFlag: true },
+          { min: 30, max: null, level: 'C', label: '30以上', redFlag: true }
+        ],
+        age_6_to_15: [
+          { min: 15, max: 30, level: 'A', label: '15〜30' },
+          { min: null, max: 14, level: 'C', label: '15未満', redFlag: true },
+          { min: 31, max: null, level: 'C', label: '31以上', redFlag: true }
+        ],
+        age_3_to_6: [
+          { min: 20, max: 30, level: 'A', label: '20〜30' },
+          { min: null, max: 19, level: 'C', label: '20未満', redFlag: true },
+          { min: 31, max: null, level: 'C', label: '31以上', redFlag: true }
+        ],
+        age_1_to_3: [
+          { min: 20, max: 40, level: 'A', label: '20〜40' },
+          { min: null, max: 19, level: 'C', label: '20未満', redFlag: true },
+          { min: 41, max: null, level: 'C', label: '41以上', redFlag: true }
+        ],
+        under_1: [
+          { min: 30, max: 60, level: 'A', label: '30〜60' },
+          { min: null, max: 29, level: 'C', label: '30未満', redFlag: true },
+          { min: 61, max: null, level: 'C', label: '61以上', redFlag: true }
+        ]
+      }
+    },
+    {
+      id: 'breath_sound',
+      label: '呼吸音',
+      kind: 'single',
+      options: [
+        { id: 'breath_sound_normal', label: '正常', level: 'A', colorZone: 'white', help: '左右差なく異常音なし' },
+        { id: 'breath_sound_lr_none', label: '左右差なし', level: 'B', colorZone: 'yellow', help: '左右で差を認めない' },
+        { id: 'rbreath_sound_lr_yes', label: '左右差あり', level: 'C', colorZone: 'green', redFlag: true, help: '左右で聞こえ方に差がある' },
+        { id: 'breath_sound_dry', label: '乾性ラ音', level: 'C', colorZone: 'green', redFlag: false, help: 'ヒューヒューする音' },
+        { id: 'breath_sound_wet', label: '湿性ラ音', level: 'C', colorZone: 'green', redFlag: false, help: 'ブツブツ・パチパチ音' },
+        { id: 'breath_sound_stenosis', label: '狭窄音', level: 'C', colorZone: 'green', redFlag: false, help: '狭い気道を通る高い音' }
+      ]
+    },
+    {
+      id: 'pulse_tension',
+      label: '緊張度',
+      kind: 'single',
+      options: [
+        { id: 'pulse_tnormal', label: '正常', level: 'A', colorZone: 'white', help: '触れ方が通常どおり' },
+        { id: 'pulse_t_strong', label: '強', level: 'B', colorZone: 'yellow', help: '脈の打ちが強い' },
+        { id: 'pulse_t_weak', label: '弱', level: 'B', colorZone: 'yellow', help: '脈の打ちが弱い' },
+        { id: 'pulse_t_lrdeffnone', label: '左右差なし', level: 'B', colorZone: 'yellow', help: '左右で脈の差を認めない' },
+        { id: 'tpulse_t_lrdeffyes', label: '左右差あり', level: 'B', colorZone: 'yellow', help: '左右で脈の強さが違う' },
+        { id: 'pulse_t_veryweak', label: '微弱', level: 'C', colorZone: 'green', redFlag: false, help: 'かなり弱く触れにくい' }
+      ]
+    },
+    {
+      id: 'pulse_rhythm',
+      label: 'リズム',
+      kind: 'single',
+      options: [
+        { id: 'pulse_rhythm_regular', label: '整', level: 'A', colorZone: 'white', help: '規則的に打っている' },
+        { id: 'pulse_rhythm_irregular', label: '不脈', level: 'C', colorZone: 'green', redFlag: false, help: '脈の間隔が不規則' },
+        { id: 'pulse_rhythm_no_carotid', label: '総頸触れず', level: 'C', colorZone: 'green', redFlag: true, help: '頸動脈を触れない' }
+      ]
+    },
+    {
+      id: 'pulse_rate',
+      label: '脈拍数（回/分）',
+      kind: 'number',
+      unit: '回/分',
+      placeholder: '数値入力',
+      help: '年齢区分ごとの基準で自動判定',
+      thresholdsByAge: {
+        adult: [
+          { min: 50, max: 100, level: 'A', label: '50〜100' },
+          { min: 101, max: 109, level: 'B', label: '101〜109' },
+          { min: null, max: 49, level: 'C', label: '50未満', redFlag: true },
+          { min: 120, max: null, level: 'C', label: '120以上', redFlag: true }
+        ],
+        age_6_to_15: [
+          { min: 60, max: 110, level: 'A', label: '60〜110' },
+          { min: null, max: 59, level: 'C', label: '60未満', redFlag: true },
+          { min: 111, max: null, level: 'C', label: '111以上', redFlag: true }
+        ],
+        age_3_to_6: [
+          { min: 70, max: 110, level: 'A', label: '70〜110' },
+          { min: null, max: 69, level: 'C', label: '70未満', redFlag: true },
+          { min: 111, max: null, level: 'C', label: '111以上', redFlag: true }
+        ],
+        age_1_to_3: [
+          { min: 80, max: 130, level: 'A', label: '80〜130' },
+          { min: null, max: 79, level: 'C', label: '80未満', redFlag: true },
+          { min: 131, max: null, level: 'C', label: '131以上', redFlag: true }
+        ],
+        under_1: [
+          { min: 80, max: 160, level: 'A', label: '80〜160' },
+          { min: null, max: 79, level: 'C', label: '80未満', redFlag: true },
+          { min: 161, max: null, level: 'C', label: '161以上', redFlag: true }
+        ]
+      }
+    },
+    {
+      id: 'systolic_bp',
+      label: '収縮期血圧',
+      kind: 'number',
+      unit: 'mmHg',
+      placeholder: '数値入力',
+      help: '収縮期血圧を入力する',
+      thresholds: [
+        { min: 90, max: 140, level: 'A', label: '90〜140' },
+        { min: 141, max: 199, level: 'B', label: '141〜199' },
+        { min: null, max: 89, level: 'C', label: '90未満', redFlag: true },
+        { min: 200, max: null, level: 'C', label: '200以上' }
+      ],
+      extraOptions: [
+        { id: 'bp_unmeasurable', label: '測定不能', level: 'C', colorZone: 'green', redFlag: true, help: '血圧が測定できない' }
+      ]
+    },
+    {
+      id: 'spo2',
+      label: 'SpO₂',
+      kind: 'number',
+      unit: '%',
+      placeholder: '数値入力',
+      help: '経皮的酸素飽和度を入力する',
+      thresholds: [
+        { min: 93, max: 100, level: 'A', label: '93%以上' },
+        { min: 90, max: 92, level: 'B', label: '90〜92%' },
+        { min: null, max: 89, level: 'C', label: '90%未満', redFlag: true }
+      ]
+    },
+    {
+      id: 'pupil_reflex',
+      label: '瞳孔反射',
+      kind: 'single',
+      options: [
+        { id: 'pupil_ref_normal', label: '正常', level: 'A', colorZone: 'white', help: '光に対する反応がある' },
+        { id: 'pupil_ref_slow', label: 'にぶい', level: 'B', colorZone: 'yellow', help: '反応が遅い・弱い' },
+        { id: 'pupil_ref_none', label: 'なし', level: 'C', colorZone: 'green', help: '光に反応しない' }
+      ]
+    },
+    {
+      id: 'pupil_left',
+      label: '瞳孔径 左',
+      kind: 'number_free',
+      unit: 'mm',
+      placeholder: '1〜8程度',
+      help: '左瞳孔径を数値で入力'
+    },
+    {
+      id: 'pupil_right',
+      label: '瞳孔径 右',
+      kind: 'number_free',
+      unit: 'mm',
+      placeholder: '1〜8程度',
+      help: '右瞳孔径を数値で入力'
+    },
+    {
+      id: 'prejudice',
+      label: '偏視',
+      kind: 'single',
+      options: [
+        { id: 'prejudice_normal', label: 'なし', level: 'A', colorZone: 'white', help: '眼球偏位を認めない' },
+        { id: 'prejudice_lr', label: '左・右', level: 'C', colorZone: 'green', help: '左右どちらかへ偏る' },
+        { id: 'prejudice_tb', label: '上・下', level: 'C', colorZone: 'green', help: '上下どちらかへ偏る' },
+        { id: 'prejudice_di', label: '斜め', level: 'C', colorZone: 'green', help: '斜め方向へ偏る' },
+        { id: 'prejudice_joint', label: '共同偏視', level: 'C', colorZone: 'green', help: '両眼が同方向へ偏る' }
+      ]
+    }
+  ]
+},
+{
+  id: 'local',
+  mountId: 'local',
+  title: '主訴・局所状態',
+  fields: [
+    {
+      id: 'convulsion',
+      label: '痙攣等',
+      kind: 'multi',
+      options: [
+        { id: 'convulsion_related_none', label: 'なし', level: 'A', colorZone: 'white', help: '痙攣や関連症状なし' },
+        { id: 'convulsion_related_tremor1', label: 'ふるえ', level: 'B', colorZone: 'yellow', help: '細かく震える' },
+        { id: 'convulsion_related_tremor2', label: '弛緩', level: 'B', colorZone: 'yellow', help: '力が抜けた状態' },
+        { id: 'convulsion_related_tremor3', label: '痙攣（局所間代）', level: 'B', colorZone: 'yellow', help: '一部の筋肉のみ反復収縮' },
+        { id: 'convulsion_related_tonic', label: '全身硬直', level: 'C', colorZone: 'green', redFlag: false, help: '全身が強く突っ張る' },
+        { id: 'convulsion_related_numbness1', label: 'しびれ', level: 'B', colorZone: 'yellow', help: '感覚が鈍い・異常感覚' },
+        { id: 'convulsion_related_numbness2', label: '悪寒', level: 'B', colorZone: 'yellow', help: '寒気を訴える' },
+        { id: 'convulsion_related_numbness3', label: 'めいまい', level: 'B', colorZone: 'yellow', help: '周囲や自分が回る感じ' },
+        { id: 'convulsion_related_numbness4', label: '耳鳴', level: 'B', colorZone: 'yellow', help: '耳の中で音がする' },
+        { id: 'convulsion_related_numbness5', label: '動機', level: 'B', colorZone: 'yellow', help: '脈を強く自覚する' },
+        { id: 'convulsion_related_chest_distress1', label: '脱力感', level: 'C', colorZone: 'green', redFlag: false, help: '力が入らずぐったりする' },
+        { id: 'convulsion_related_chest_distress2', label: '胸内苦悶', level: 'C', colorZone: 'green', redFlag: false, help: '胸の苦しさを訴える' }
+      ]
+    },
+    {
+      id: 'paralysis',
+      label: '麻痺',
+      kind: 'multi',
+      options: [
+        { id: 'para_none', label: 'なし', level: 'A', colorZone: 'white', help: '麻痺を認めない' },
+        { id: 'para_lang1', label: '言語', level: 'B', colorZone: 'yellow', help: '言葉が出にくい・乱れる' },
+        { id: 'para_lang2', label: '知覚', level: 'B', colorZone: 'yellow', help: '感覚が鈍い・消失する' },
+        { id: 'para_motor1', label: '運動（上肢）', level: 'C', colorZone: 'green', redFlag: true, help: '腕が動かない' },
+        { id: 'para_motor2', label: '運動（下肢）', level: 'C', colorZone: 'green', redFlag: true, help: '脚が動かない' },
+        { id: 'para_motor3', label: '運動（片側）', level: 'C', colorZone: 'green', redFlag: true, help: '左右どちらかが動かない' },
+        { id: 'para_motor4', label: '運動（上半身）', level: 'C', colorZone: 'green', redFlag: true, help: '上半身全体が動きにくい' },
+        { id: 'para_motor5', label: '運動（下半身）', level: 'C', colorZone: 'green', redFlag: true, help: '下半身全体が動きにくい' },
+        { id: 'para_motor6', label: '運動（全麻痺）', level: 'C', colorZone: 'green', redFlag: true, help: '全身が動かない' },
+        { id: 'para_decerebrate1', label: '除脳硬直', level: 'C', colorZone: 'green', redFlag: true, help: '四肢が強く伸展する' },
+        { id: 'para_decerebrate2', label: '除皮質硬直', level: 'C', colorZone: 'green', redFlag: true, help: '上肢屈曲・下肢伸展を示す' }
+      ]
+    },
+    {
+      id: 'parts',
+      label: '部位',
+      kind: 'multi',
+      options: [
+        { id: 'parts1', label: '頭', level: 'A', colorZone: 'white', help: '頭部' },
+        { id: 'parts2', label: '顔', level: 'A', colorZone: 'white', help: '顔面' },
+        { id: 'parts3', label: '眼', level: 'A', colorZone: 'white', help: '眼球・眼周囲' },
+        { id: 'parts4', label: '鼻', level: 'A', colorZone: 'white', help: '鼻部' },
+        { id: 'parts5', label: '口', level: 'A', colorZone: 'white', help: '口腔・口唇' },
+        { id: 'parts6', label: '耳', level: 'A', colorZone: 'white', help: '耳介・外耳部' },
+        { id: 'parts7', label: '頸', level: 'A', colorZone: 'white', help: '頸部' },
+        { id: 'parts8', label: '肩', level: 'A', colorZone: 'white', help: '肩周囲' },
+        { id: 'parts9', label: '胸', level: 'A', colorZone: 'white', help: '胸部' },
+        { id: 'parts10', label: '腹', level: 'A', colorZone: 'white', help: '腹部' },
+        { id: 'parts11', label: '腰', level: 'A', colorZone: 'white', help: '腰部' },
+        { id: 'parts12', label: '背', level: 'A', colorZone: 'white', help: '背部' },
+        { id: 'parts13', label: '臀', level: 'A', colorZone: 'white', help: '臀部' },
+        { id: 'parts14', label: '陰', level: 'A', colorZone: 'white', help: '会陰部' },
+        { id: 'parts15', label: '前額', level: 'A', colorZone: 'white', help: '額の前面' },
+        { id: 'parts16', label: '前胸部', level: 'A', colorZone: 'white', help: '胸の前面' },
+        { id: 'parts17', label: '上腹部', level: 'A', colorZone: 'white', help: 'みぞおち周辺' }
+      ]
+    },
+    {
+      id: 'pain',
+      label: '痛み',
+      kind: 'multi',
+      options: [
+        { id: 'pain_none', label: 'なし', level: 'A', colorZone: 'white', help: '痛みを訴えない' },
+        { id: 'pain_warn1', label: '鈍痛・激痛', level: 'B', colorZone: 'yellow', help: '強さの違う痛みを示す' },
+        { id: 'pain_warn2', label: '限局・放散', level: 'B', colorZone: 'yellow', help: '範囲や広がりを示す' },
+        { id: 'pain_warn3', label: '間歇・持続', level: 'B', colorZone: 'yellow', help: '出方や続き方を示す' }
+      ]
+    },
+    {
+      id: 'bleeding',
+      label: '出血',
+      kind: 'multi',
+      options: [
+        { id: 'bleed_none', label: 'なし', level: 'A', colorZone: 'white', help: '出血なし' },
+        { id: 'bleed_small', label: '少', level: 'B', colorZone: 'yellow', help: '少量出血' },
+        { id: 'bleed_medium', label: '中', level: 'C', colorZone: 'green', help: '中等量出血' },
+        { id: 'bleed_large', label: '多', level: 'C', colorZone: 'green', redFlag: true, help: '多量出血' },
+        { id: 'bleed_csf', label: '髄液（耳・鼻）漏', level: 'C', colorZone: 'green', redFlag: true, help: '耳鼻から透明液が漏れる' }
+      ]
+    },
+    {
+      id: 'injury_type',
+      label: '創傷等',
+      kind: 'multi',
+      options: [
+        { id: 'inj_none', label: 'なし', level: 'A', colorZone: 'white', help: '創傷を認めない' },
+        { id: 'inj_surface1', label: '擦過傷', level: 'B', colorZone: 'yellow', help: '表面が擦れている' },
+        { id: 'inj_surface2', label: '打撲', level: 'B', colorZone: 'yellow', help: 'ぶつけた損傷' },
+        { id: 'inj_surface3', label: '咬創', level: 'B', colorZone: 'yellow', help: '咬まれた傷' },
+        { id: 'inj_surface4', label: '切創', level: 'B', colorZone: 'yellow', help: '刃物様で切れた傷' },
+        { id: 'inj_surface5', label: '割創', level: 'B', colorZone: 'yellow', help: '裂けたような傷' },
+        { id: 'inj_surface6', label: '挫滅創', level: 'B', colorZone: 'yellow', help: '押しつぶされた傷' },
+        { id: 'inj_penetrating1', label: '刺創', level: 'C', colorZone: 'green', help: '尖った物が刺さった傷' },
+        { id: 'inj_penetrating2', label: '杙創', level: 'C', colorZone: 'green', help: '棒状の物が刺入した傷' },
+        { id: 'inj_penetrating3', label: '切断', level: 'C', colorZone: 'green', help: '身体の一部が切り離された' },
+        { id: 'inj_penetrating4', label: '轢断', level: 'C', colorZone: 'green', help: '轢かれて断裂した傷' },
+        { id: 'inj_major1', label: '頭・頸・胸・腹・鼠頸部への穿通性外傷', level: 'C', colorZone: 'green', redFlag: true, help: '体幹主要部へ貫通した外傷' },
+        { id: 'inj_major2', label: 'フレイルチェスト', level: 'C', colorZone: 'green', redFlag: true, help: '胸壁の一部が逆に動く' },
+        { id: 'inj_major3', label: '多指切断', level: 'C', colorZone: 'green', redFlag: true, help: '複数の指が切断されている' },
+        { id: 'inj_major4', label: '四肢の切断', level: 'C', colorZone: 'green', redFlag: true, help: '手足の大きな切断' },
+        { id: 'inj_major5', label: '腹壁緊張', level: 'C', colorZone: 'green', redFlag: true, help: '腹部が硬く緊張している' },
+        { id: 'inj_major6', label: '腹膜刺激症状', level: 'C', colorZone: 'green', redFlag: true, help: '腹膜刺激で強い痛みが出る' },
+        { id: 'inj_major7', label: '腸管損傷', level: 'C', colorZone: 'green', redFlag: true, help: '腸が損傷している疑い' },
+        { id: 'inj_major8', label: '腹部膨隆', level: 'C', colorZone: 'green', redFlag: true, help: '腹部が膨れている' },
+        { id: 'inj_major9', label: '内臓露出', level: 'C', colorZone: 'green', redFlag: true, help: '内臓が体外へ出ている' },
+        { id: 'inj_major10', label: '頸部又は胸部の皮下気腫', level: 'C', colorZone: 'green', redFlag: true, help: '皮下に空気が入っている' },
+        { id: 'inj_major11', label: '血気胸疑', level: 'C', colorZone: 'green', redFlag: true, help: '血胸や気胸を疑う所見' },
+        { id: 'inj_major12', label: '外頸静脈の著しい怒張', level: 'C', colorZone: 'green', redFlag: true, help: '頸静脈が強く張っている' },
+        { id: 'inj_major13', label: 'デグロービング損傷', level: 'C', colorZone: 'green', redFlag: true, help: '皮膚が大きく剥がれている' },
+        { id: 'inj_major14', label: '１５％以上の熱傷を伴う外傷', level: 'C', colorZone: 'green', redFlag: true, help: '広範囲熱傷を伴う外傷' },
+        { id: 'inj_major15', label: '顔面熱傷・気道熱傷', level: 'C', colorZone: 'green', redFlag: true, help: '顔や気道の熱傷を疑う' }
+      ]
+    },
+    {
+      id: 'fracture',
+      label: '骨折',
+      kind: 'multi',
+      options: [
+        { id: 'frac_none', label: 'なし', level: 'A', colorZone: 'white', help: '骨折所見なし' },
+        { id: 'frac_closed1', label: '捻挫', level: 'B', colorZone: 'yellow', help: '関節や靱帯の損傷' },
+        { id: 'frac_closed2', label: '腫脹', level: 'B', colorZone: 'yellow', help: '腫れを認める' },
+        { id: 'frac_closed3', label: '脱臼', level: 'B', colorZone: 'yellow', help: '関節が外れている' },
+        { id: 'frac_closed4', label: '変形', level: 'B', colorZone: 'yellow', help: '見た目の形が崩れている' },
+        { id: 'frac_closed5', label: '非開放', level: 'B', colorZone: 'yellow', help: '皮膚表面は開いていない' },
+        { id: 'frac_open1', label: '陥没', level: 'C', colorZone: 'green', help: '骨や部位がへこんでいる' },
+        { id: 'frac_open2', label: '開放', level: 'C', colorZone: 'green', help: '骨折部が外へ露出する' },
+        { id: 'frac_open3', label: '動揺', level: 'C', colorZone: 'green', help: '異常にぐらつく' },
+        { id: 'frac_open4', label: '軋音', level: 'C', colorZone: 'green', help: 'こすれる音や感触がある' },
+        { id: 'frac_closed1', label: '鎖骨', level: 'B', colorZone: 'yellow', help: '鎖骨部の骨折' },
+        { id: 'frac_closed2', label: '肋骨', level: 'B', colorZone: 'yellow', help: '肋骨部の骨折' },
+        { id: 'frac_major1', label: '頸損・脊損（胸・腰）', level: 'C', colorZone: 'green', redFlag: true, help: '脊椎損傷を疑う' },
+        { id: 'frac_major2', label: '胸壁運動の左右差', level: 'C', colorZone: 'green', redFlag: true, help: '胸壁の動きに差がある' },
+        { id: 'frac_major3', label: '胸郭動揺', level: 'C', colorZone: 'green', redFlag: true, help: '胸郭の一部が逆に動く' },
+        { id: 'frac_major4', label: '骨盤', level: 'C', colorZone: 'green', redFlag: true, help: '骨盤骨折を疑う' },
+        { id: 'frac_major5', label: '両側大腿骨', level: 'C', colorZone: 'green', redFlag: true, help: '両大腿骨の骨折を疑う' },
+        { id: 'frac_major6', label: '顔面骨', level: 'C', colorZone: 'green', redFlag: true, help: '顔面骨折を疑う' }
+      ]
+    },
+    {
+      id: 'mechanism',
+      label: '受傷機転（重症）',
+      kind: 'multi',
+      options: [
+        { id: 'mech_severe1', label: '頸部刺創', level: 'C', colorZone: 'green', redFlag: true, help: '頸部への刺創' },
+        { id: 'mech_severe2', label: '胸腹部刺創、銃創', level: 'C', colorZone: 'green', redFlag: true, help: '胸腹部の刺創・銃創' },
+        { id: 'mech_severe3', label: '高所墜落（約５ｍ以上の場合）', level: 'C', colorZone: 'green', redFlag: true, help: '高所からの墜落' },
+        { id: 'mech_severe4', label: '機械器具に巻き込まれた', level: 'C', colorZone: 'green', redFlag: true, help: '機械に巻き込まれた外傷' },
+        { id: 'mech_severe5', label: '頭、頸、体幹部が挟まれた', level: 'C', colorZone: 'green', redFlag: true, help: '頭頸体幹の挟圧外傷' },
+        { id: 'mech_severe6', label: '車から放り出された', level: 'C', colorZone: 'green', redFlag: true, help: '車外放出' },
+        { id: 'mech_severe7', label: '同乗者の死亡', level: 'C', colorZone: 'green', redFlag: true, help: '同乗者死亡を伴う事故' },
+        { id: 'mech_severe8', label: '救出に20分以上要した', level: 'C', colorZone: 'green', redFlag: true, help: '救出困難な事故' },
+        { id: 'mech_severe9', label: '車の横転', level: 'C', colorZone: 'green', redFlag: true, help: '車両横転事故' },
+        { id: 'mech_severe10', label: '車が高度に損傷している', level: 'C', colorZone: 'green', redFlag: true, help: '車体損傷が大きい' },
+        { id: 'mech_severe11', label: '車にひかれた', level: 'C', colorZone: 'green', redFlag: true, help: '轢過事故' },
+        { id: 'mech_severe12', label: '５ｍ以上跳ね飛ばされた', level: 'C', colorZone: 'green', redFlag: true, help: '大きく飛ばされた事故' },
+        { id: 'mech_severe13', label: '受傷機転（転倒したバイクと運転者の距離、大。自動車が歩行者、自転車に衝突等）から重症と疑える場合', level: 'C', colorZone: 'green', redFlag: true, help: '高エネルギー外傷を疑う機転' }
+      ]
+    },
+  ]
+},
     {
       id: 'notes',
       mountId: 'notes',
@@ -1319,7 +1366,7 @@ function renderField(container, field) {
   const meta = document.createElement('span');
   meta.className = 'field-meta';
   meta.textContent = getKindLabel(field.kind);
-
+	
   rightWrap.appendChild(meta);
 
   let toggle = null;
@@ -1337,6 +1384,24 @@ function renderField(container, field) {
     });
   }
 
+  const helpBtn = document.createElement('span');
+  helpBtn.className = 'field-help';
+  helpBtn.textContent = 'ⓘ';
+
+  rightWrap.appendChild(helpBtn);
+
+  helpBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    let existing = fieldEl.querySelector('.help-content');
+    if(existing){
+      existing.remove();
+      return;
+    }
+
+    const content = buildHelpContent(field);
+    fieldEl.appendChild(content);
+  });
+	
   head.appendChild(left);
   head.appendChild(rightWrap);
   fieldEl.appendChild(head);
@@ -1516,6 +1581,22 @@ function renderField(container, field) {
 
   fieldEl.appendChild(body);
   container.appendChild(fieldEl);
+}
+
+function buildHelpContent(field) {
+  const list = document.createElement('div');
+  list.className = 'help-content';
+
+  field.options.forEach(function(opt){
+    if(!opt.help) return;
+
+    const row = document.createElement('div');
+    row.className = 'help-row';
+    row.textContent = opt.label + '：' + opt.help;
+    list.appendChild(row);
+  });
+
+  return list;
 }
 
 function renderAll() {
