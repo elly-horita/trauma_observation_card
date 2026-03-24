@@ -83,6 +83,13 @@
     pointer-events: auto;
     transform: translateY(0);
   }
+  .result-panel.compact-only #resultFull {
+    display: none !important;
+  }
+
+  .result-panel.compact-only {
+    transform: translateY(0);
+  }
   h1 {
     margin: 0 0 8px;
     font-size: 28px;
@@ -153,13 +160,6 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 16px;
-    padding-bottom: 180px;
-  }
-
-  @media (max-width: 920px) {
-    .content {
-      padding-bottom: 280px;
-    }
   }
   .section-title {
     margin: 0 0 12px;
@@ -461,7 +461,7 @@
         <div id="resultReason" class="summary-box"></div>
         <ul id="selectedList" class="selected-list"></ul>
         <div class="actions">
-          <button id="exportBtn" type="button">JSON出力</button>
+          <!--<button id="exportBtn" type="button">JSON出力</button>-->
           <button id="resetBtn" type="button">リセット</button>
           <button id="pdfBtn" type="button">PDF出力</button>
         </div>
@@ -1834,6 +1834,29 @@ function updateResultPanelExpand() {
 window.addEventListener('scroll', updateResultPanelExpand);
 window.addEventListener('resize', updateResultPanelExpand);
 window.addEventListener('load', updateResultPanelExpand);
+
+function setupNotesAwareCompact() {
+  var panel = document.getElementById('resultPanel');
+  var notes = document.getElementById('notes');
+  if (!panel || !notes) return;
+
+  function checkNotes() {
+    var rect = notes.getBoundingClientRect();
+    var nearNotes = rect.top < window.innerHeight - 220;
+
+    if (nearNotes) {
+      panel.classList.add('compact-only');
+    } else {
+      panel.classList.remove('compact-only');
+    }
+  }
+
+  window.addEventListener('scroll', checkNotes);
+  window.addEventListener('resize', checkNotes);
+  checkNotes();
+}
+
+window.addEventListener('load', setupNotesAwareCompact);
 
 function exportResultPDF() {
   var resultPanel = document.getElementById('resultPanel');
