@@ -1828,7 +1828,7 @@ function updateResultPanelState() {
   if (!panel) return;
 
   // 記事欄入力中なら必ず閉じる
-  if (panel.classList.contains('force-compact')) {
+  if (state.notesEditing) {
     panel.classList.remove('expanded');
     panel.classList.add('compact-only');
     return;
@@ -1845,7 +1845,7 @@ function updateResultPanelState() {
 
   var currentBottom = scrollTop + viewportHeight;
 
-  // 開く位置と閉じる位置を分ける（←ここが重要）
+  // 開く位置と閉じる位置を分けてチラつきを防ぐ
   var openThreshold = docHeight - 40;
   var closeThreshold = docHeight - 180;
 
@@ -1859,11 +1859,7 @@ function updateResultPanelState() {
     panel.classList.remove('expanded');
   }
 }
-
-window.addEventListener('scroll', updateResultPanelState);
-window.addEventListener('resize', updateResultPanelState);
-window.addEventListener('load', updateResultPanelState);
-
+	
 /**
  * 記事欄 focus とスクロールイベントを監視して
  * 結果パネルの状態を更新する
