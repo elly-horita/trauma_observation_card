@@ -286,6 +286,10 @@ h1 {
   outline: 4px solid #111827;
   outline-offset: -4px;
 }
+.option-level {
+  display: block;
+  margin-top: 4px;
+}
 
 /* ===============================
    11. 複数選択（チェックリスト）
@@ -1294,7 +1298,9 @@ function makeOptionButton(field, option) {
   button.className = createOptionButtonClass(option);
   button.dataset.fieldId = field.id;
   button.dataset.optionId = option.id;
-  button.innerHTML = option.label + (option.level ? '<small>' + option.level + '</small>' : '');
+  button.innerHTML =
+  '<span class="option-label">' + option.label + '</span>' +
+  (option.level ? '<small class="option-level">' + option.level + '</small>' : '');
 
   button.addEventListener('click', function() {
     const fid = field.id;
