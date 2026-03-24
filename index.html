@@ -62,6 +62,12 @@
     margin-bottom: 0;
     transition: margin-bottom 0.2s ease;
   }
+  .result-panel {
+    position: sticky;
+    bottom: 12px;
+    z-index: 30;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
   #resultFull {
     opacity: 0;
     max-height: 0;
@@ -84,11 +90,14 @@
     transform: translateY(0);
   }
   .result-panel.compact-only #resultFull {
-    display: none !important;
+    opacity: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(6px) !important;
   }
-
-  .result-panel.compact-only {
-    transform: translateY(0);
+  .result-panel.compact-only #resultCompact {
+    margin-bottom: 0 !important;
   }
   h1 {
     margin: 0 0 8px;
@@ -1835,28 +1844,52 @@ window.addEventListener('scroll', updateResultPanelExpand);
 window.addEventListener('resize', updateResultPanelExpand);
 window.addEventListener('load', updateResultPanelExpand);
 
-function setupNotesAwareCompact() {
+// リザルトパネルと下の項目をかぶらせない
+function updateResultPanelState() {
   var panel = document.getElementById('resultPanel');
   var notes = document.getElementById('notes');
-  if (!panel || !notes) return;
+  if (!panel) return;
 
-  function checkNotes() {
+  var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+  var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+  var docHeight = Math.max(
+    document.body.scrollHeight,
+    document.documentElement.scrollHeight,
+    document.body.offsetHeight,
+    document.documentElement.offsetHeight
+  );
+
+  var currentBottom = scrollTop + viewportHeight;
+
+  var openThreshold = docHeight - 60;
+  var closeThreshold = docHeight - 180;
+  var isExpanded = panel.classList.contains('expanded');
+
+  var nearNotes = false;
+  if (notes) {
     var rect = notes.getBoundingClientRect();
-    var nearNotes = rect.top < window.innerHeight - 220;
-
-    if (nearNotes) {
-      panel.classList.add('compact-only');
-    } else {
-      panel.classList.remove('compact-only');
-    }
+    nearNotes = rect.top < window.innerHeight - 220;
   }
 
-  window.addEventListener('scroll', checkNotes);
-  window.addEventListener('resize', checkNotes);
-  checkNotes();
+  panel.classList.remove('compact-only');
+
+  if (nearNotes) {
+    panel.classList.add('compact-only');
+    panel.classList.remove('expanded');
+    return;
+  }
+
+  // 記事欄付近でなければ expanded 判定
+  if (!isExpanded && currentBottom >= openThreshold) {
+    panel.classList.add('expanded');
+  } else if (isExpanded && currentBottom < closeThreshold) {
+    panel.classList.remove('expanded');
+  }
 }
 
-window.addEventListener('load', setupNotesAwareCompact);
+window.addEventListener('scroll', updateResultPanelState);
+window.addEventListener('resize', updateResultPanelState);
+window.addEventListener('load', updateResultPanelState);
 
 function exportResultPDF() {
   var resultPanel = document.getElementById('resultPanel');
