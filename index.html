@@ -62,12 +62,6 @@
     margin-bottom: 0;
     transition: margin-bottom 0.2s ease;
   }
-  .result-panel {
-    position: sticky;
-    bottom: 12px;
-    z-index: 30;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
   #resultFull {
     opacity: 0;
     max-height: 0;
@@ -88,16 +82,6 @@
     overflow: auto;
     pointer-events: auto;
     transform: translateY(0);
-  }
-  .result-panel.compact-only #resultFull {
-    opacity: 0 !important;
-    max-height: 0 !important;
-    overflow: hidden !important;
-    pointer-events: none !important;
-    transform: translateY(6px) !important;
-  }
-  .result-panel.compact-only #resultCompact {
-    margin-bottom: 0 !important;
   }
   h1 {
     margin: 0 0 8px;
@@ -1813,6 +1797,43 @@ const resetBtn = document.getElementById('resetBtn');
 if (resetBtn) {
   resetBtn.addEventListener('click', resetAll);
 }
+	
+// 記事とリザルトのかぶり回避	
+function updateResultPanelState() {
+  var panel = document.getElementById('resultPanel');
+  var notes = document.getElementById('notes');
+  if (!panel) return;
+
+  var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+  var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+  var docHeight = Math.max(
+    document.body.scrollHeight,
+    document.documentElement.scrollHeight,
+    document.body.offsetHeight,
+    document.documentElement.offsetHeight
+  );
+
+  var currentBottom = scrollTop + viewportHeight;
+  var reachedBottom = currentBottom >= docHeight - 40;
+
+  var nearNotes = false;
+  if (notes) {
+    var rect = notes.getBoundingClientRect();
+    nearNotes = rect.top < window.innerHeight - 120 && rect.bottom > 120;
+  }
+
+  panel.classList.remove('expanded');
+  panel.classList.remove('compact-only');
+
+  if (nearNotes && !reachedBottom) {
+    panel.classList.add('compact-only');
+    return;
+  }
+
+  if (reachedBottom) {
+    panel.classList.add('expanded');
+  }
+}
 
 function updateResultPanelExpand() {
   var panel = document.getElementById('resultPanel');
@@ -1843,53 +1864,6 @@ function updateResultPanelExpand() {
 window.addEventListener('scroll', updateResultPanelExpand);
 window.addEventListener('resize', updateResultPanelExpand);
 window.addEventListener('load', updateResultPanelExpand);
-
-// リザルトパネルと下の項目をかぶらせない
-function updateResultPanelState() {
-  var panel = document.getElementById('resultPanel');
-  var notes = document.getElementById('notes');
-  if (!panel) return;
-
-  var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
-  var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-  var docHeight = Math.max(
-    document.body.scrollHeight,
-    document.documentElement.scrollHeight,
-    document.body.offsetHeight,
-    document.documentElement.offsetHeight
-  );
-
-  var currentBottom = scrollTop + viewportHeight;
-
-  var openThreshold = docHeight - 60;
-  var closeThreshold = docHeight - 180;
-  var isExpanded = panel.classList.contains('expanded');
-
-  var nearNotes = false;
-  if (notes) {
-    var rect = notes.getBoundingClientRect();
-    nearNotes = rect.top < window.innerHeight - 220;
-  }
-
-  panel.classList.remove('compact-only');
-
-  if (nearNotes) {
-    panel.classList.add('compact-only');
-    panel.classList.remove('expanded');
-    return;
-  }
-
-  // 記事欄付近でなければ expanded 判定
-  if (!isExpanded && currentBottom >= openThreshold) {
-    panel.classList.add('expanded');
-  } else if (isExpanded && currentBottom < closeThreshold) {
-    panel.classList.remove('expanded');
-  }
-}
-
-window.addEventListener('scroll', updateResultPanelState);
-window.addEventListener('resize', updateResultPanelState);
-window.addEventListener('load', updateResultPanelState);
 
 function exportResultPDF() {
   var resultPanel = document.getElementById('resultPanel');
