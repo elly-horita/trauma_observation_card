@@ -1939,6 +1939,7 @@ function resetAll() {
 function updateResultPanelExpand() {
   var panel = document.getElementById('resultPanel');
   if (!panel) return;
+  if (panel.classList.contains('compact-only')) return;
 
   var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
   var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
@@ -1966,6 +1967,32 @@ function updateResultPanelExpand() {
 window.addEventListener('scroll', updateResultPanelExpand);
 window.addEventListener('resize', updateResultPanelExpand);
 window.addEventListener('load', updateResultPanelExpand);
+
+// 記事入力欄をタプしたら resultPanel をCompactへ
+function setupNotesCompactMode() {
+  const notesMount = document.getElementById('notes');
+  const resultPanel = document.getElementById('resultPanel');
+
+  if (!notesMount || !resultPanel) return;
+
+  notesMount.addEventListener('focusin', function () {
+    resultPanel.classList.remove('expanded');
+    resultPanel.classList.add('compact-only');
+  });
+
+  notesMount.addEventListener('focusout', function () {
+    // 次のフォーカス先判定のため少し遅らせる
+    setTimeout(function () {
+      const active = document.activeElement;
+      const stillInsideNotes = notesMount.contains(active);
+
+      if (!stillInsideNotes) {
+        resultPanel.classList.remove('compact-only');
+        updateResultPanelExpand();
+      }
+    }, 0);
+  });
+}
 
 /**
  * resultPanel の内容だけを別ウィンドウに書き出して印刷する
@@ -2080,6 +2107,7 @@ if (pdfBtn) {
 // 初期描画
 renderAll();
 updateUI();
+setupNotesCompactMode();
 </script>
 </body>
 </html>
