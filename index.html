@@ -97,9 +97,10 @@ button {
 }
 
 @media (max-width: 920px) {
-  .result-panel {
-    bottom: 12px;
-  }
+.result-panel {
+  position: sticky;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+}
 }
 
 /* 展開アニメーション制御 */
