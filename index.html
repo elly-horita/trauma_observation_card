@@ -131,6 +131,9 @@ button {
   pointer-events: auto;
   transform: translateY(0);
 }
+.result-level.has-redflag {
+  box-shadow: inset 0 0 0 4px #d90000;
+}
 
 /* ===============================
    6. 見出し・説明
@@ -1802,8 +1805,12 @@ function updateNumberHints() {
  */
 function updateResultPanel(summary) {
   const resultLevel = document.getElementById('resultLevel');
-  resultLevel.textContent = summary.level;
-  resultLevel.className = 'result-level ' + String(summary.level).toLowerCase();
+resultLevel.textContent = summary.level;
+
+resultLevel.className =
+  'result-level ' +
+  String(summary.level).toLowerCase() +
+  (summary.redFlags.length > 0 ? ' has-redflag' : '');
 
   const reason = document.getElementById('resultReason');
 
