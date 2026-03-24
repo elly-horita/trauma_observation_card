@@ -542,7 +542,11 @@ const schema = {
       kind: 'single',
       options: [
         { id: 'walkable', label: '歩行可能', level: 'A', colorZone: 'white', help: '自力で歩ける状態' },
-        { id: 'unable_to_walk', label: '仰/側/腹/坐/その他', level: 'A', colorZone: 'white', help: '自力歩行できず姿勢を取っている' },
+        { id: 'unable_to_walk1', label: '仰臥位', level: 'A', colorZone: 'white', help: '仰向けに寝ている' },
+        { id: 'unable_to_walk2', label: '側臥位', level: 'A', colorZone: 'white', help: '横向きに寝ている' },
+        { id: 'unable_to_walk3', label: '腹臥位', level: 'A', colorZone: 'white', help: '腹ばいに寝ている' },
+        { id: 'unable_to_walk4', label: '座位', level: 'A', colorZone: 'white', help: '座っている' },
+        { id: 'unable_to_walk5', label: 'その他', level: 'A', colorZone: 'white', help: '上記に当てはまらない不自然・異常な体位' },
         { id: 'collapse', label: '虚脱', level: 'C', colorZone: 'green', redFlag: true, help: 'ぐったりして力が入らない' }
       ]
     },
