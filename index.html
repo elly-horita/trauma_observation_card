@@ -1449,6 +1449,7 @@ function renderField(container, field) {
   }
 
   // 補足表示トリガー（ⓘ）
+  // 補足表示トリガー（ⓘ）
   const helpBtn = document.createElement('span');
   helpBtn.className = 'field-help';
   helpBtn.textContent = 'ⓘ';
@@ -1657,14 +1658,25 @@ function buildHelpContent(field) {
   const list = document.createElement('div');
   list.className = 'help-content';
 
-  field.options.forEach(function(opt){
-    if(!opt.help) return;
-
+  // フィールド自身のhelp
+  if (field.help) {
     const row = document.createElement('div');
     row.className = 'help-row';
-    row.textContent = opt.label + '：' + opt.help;
+    row.textContent = field.help;
     list.appendChild(row);
-  });
+  }
+
+  // optionsがある場合だけ回す
+  if (field.options && Array.isArray(field.options)) {
+    field.options.forEach(function(opt) {
+      if (!opt.help) return;
+
+      const row = document.createElement('div');
+      row.className = 'help-row';
+      row.textContent = opt.label + '：' + opt.help;
+      list.appendChild(row);
+    });
+  }
 
   return list;
 }
