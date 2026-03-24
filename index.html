@@ -552,8 +552,8 @@ const schema = {
         { id: 'face_flush1', label: '黄潮', level: 'B', colorZone: 'yellow', help: '黄色みが強く見える' },
         { id: 'face_flush2', label: '紅潮', level: 'B', colorZone: 'yellow', help: '赤みが強く見える' },
         { id: 'face_cyanosis', label: '土気色', level: 'C', colorZone: 'green', redFlag: false, help: '灰色っぽく血色が悪い' },
-        { id: 'face_cyanosis_red', label: '蒼白', level: 'C', colorZone: 'green', redFlag: true, help: '血の気が引き血流や血圧低下を疑う' },
-        { id: 'face_cyanosis_red', label: 'チアノーゼ', level: 'C', colorZone: 'green', redFlag: true, help: '口唇や爪が青紫で酸素不足や循環不全を疑う' }
+        { id: 'face_cyanosis_wh', label: '蒼白', level: 'C', colorZone: 'green', redFlag: true, help: '血の気が引き血流や血圧低下を疑う' },
+        { id: 'face_cyanosis_cya', label: 'チアノーゼ', level: 'C', colorZone: 'green', redFlag: true, help: '口唇や爪が青紫で酸素不足や循環不全を疑う' }
       ]
     },
     {
@@ -684,7 +684,7 @@ const schema = {
       options: [
         { id: 'breath_sound_normal', label: '正常', level: 'A', colorZone: 'white', help: '左右差なく異常音なし' },
         { id: 'breath_sound_lr_none', label: '左右差なし', level: 'B', colorZone: 'yellow', help: '左右で差を認めない' },
-        { id: 'rbreath_sound_lr_yes', label: '左右差あり', level: 'C', colorZone: 'green', redFlag: true, help: '左右で聞こえ方に差がある' },
+        { id: 'breath_sound_lr_yes', label: '左右差あり', level: 'C', colorZone: 'green', redFlag: true, help: '左右で聞こえ方に差がある' },
         { id: 'breath_sound_dry', label: '乾性ラ音', level: 'C', colorZone: 'green', redFlag: false, help: 'ヒューヒューする音' },
         { id: 'breath_sound_wet', label: '湿性ラ音', level: 'C', colorZone: 'green', redFlag: false, help: 'ブツブツ・パチパチ音' },
         { id: 'breath_sound_stenosis', label: '狭窄音', level: 'C', colorZone: 'green', redFlag: false, help: '狭い気道を通る高い音' }
@@ -698,8 +698,8 @@ const schema = {
         { id: 'pulse_tnormal', label: '正常', level: 'A', colorZone: 'white', help: '触れ方が通常どおり' },
         { id: 'pulse_t_strong', label: '強', level: 'B', colorZone: 'yellow', help: '脈の打ちが強い' },
         { id: 'pulse_t_weak', label: '弱', level: 'B', colorZone: 'yellow', help: '脈の打ちが弱い' },
-        { id: 'pulse_t_lrdeffnone', label: '左右差なし', level: 'B', colorZone: 'yellow', help: '左右で脈の差を認めない' },
-        { id: 'tpulse_t_lrdeffyes', label: '左右差あり', level: 'B', colorZone: 'yellow', help: '左右で脈の強さが違う' },
+        { id: 'pulse_t_lr_deffnone', label: '左右差なし', level: 'B', colorZone: 'yellow', help: '左右で脈の差を認めない' },
+        { id: 'pulse_t_lr_deffyes', label: '左右差あり', level: 'B', colorZone: 'yellow', help: '左右で脈の強さが違う' },
         { id: 'pulse_t_veryweak', label: '微弱', level: 'C', colorZone: 'green', redFlag: false, help: 'かなり弱く触れにくい' }
       ]
     },
@@ -947,17 +947,17 @@ const schema = {
       kind: 'multi',
       options: [
         { id: 'frac_none', label: 'なし', level: 'A', colorZone: 'white', help: '骨折所見なし' },
-        { id: 'frac_closed1', label: '捻挫', level: 'B', colorZone: 'yellow', help: '関節や靱帯の損傷' },
-        { id: 'frac_closed2', label: '腫脹', level: 'B', colorZone: 'yellow', help: '腫れを認める' },
-        { id: 'frac_closed3', label: '脱臼', level: 'B', colorZone: 'yellow', help: '関節が外れている' },
-        { id: 'frac_closed4', label: '変形', level: 'B', colorZone: 'yellow', help: '見た目の形が崩れている' },
-        { id: 'frac_closed5', label: '非開放', level: 'B', colorZone: 'yellow', help: '皮膚表面は開いていない' },
-        { id: 'frac_open1', label: '陥没', level: 'C', colorZone: 'green', help: '骨や部位がへこんでいる' },
-        { id: 'frac_open2', label: '開放', level: 'C', colorZone: 'green', help: '骨折部が外へ露出する' },
-        { id: 'frac_open3', label: '動揺', level: 'C', colorZone: 'green', help: '異常にぐらつく' },
-        { id: 'frac_open4', label: '軋音', level: 'C', colorZone: 'green', help: 'こすれる音や感触がある' },
-        { id: 'frac_closed1', label: '鎖骨', level: 'B', colorZone: 'yellow', help: '鎖骨部の骨折' },
-        { id: 'frac_closed2', label: '肋骨', level: 'B', colorZone: 'yellow', help: '肋骨部の骨折' },
+        { id: 'frac_bone1', label: '捻挫', level: 'B', colorZone: 'yellow', help: '関節や靱帯の損傷' },
+        { id: 'frac_bone2', label: '腫脹', level: 'B', colorZone: 'yellow', help: '腫れを認める' },
+        { id: 'frac_bone3', label: '脱臼', level: 'B', colorZone: 'yellow', help: '関節が外れている' },
+        { id: 'frac_bone4', label: '変形', level: 'B', colorZone: 'yellow', help: '見た目の形が崩れている' },
+        { id: 'frac_bone5', label: '非開放', level: 'B', colorZone: 'yellow', help: '皮膚表面は開いていない' },
+        { id: 'frac_bone6', label: '陥没', level: 'C', colorZone: 'green', help: '骨や部位がへこんでいる' },
+        { id: 'frac_bone7', label: '開放', level: 'C', colorZone: 'green', help: '骨折部が外へ露出する' },
+        { id: 'frac_bone8', label: '動揺', level: 'C', colorZone: 'green', help: '異常にぐらつく' },
+        { id: 'frac_bone9', label: '軋音', level: 'C', colorZone: 'green', help: 'こすれる音や感触がある' },
+        { id: 'frac_bone10', label: '鎖骨', level: 'B', colorZone: 'yellow', help: '鎖骨部の骨折' },
+        { id: 'frac_bone11', label: '肋骨', level: 'B', colorZone: 'yellow', help: '肋骨部の骨折' },
         { id: 'frac_major1', label: '頸損・脊損（胸・腰）', level: 'C', colorZone: 'green', redFlag: true, help: '脊椎損傷を疑う' },
         { id: 'frac_major2', label: '胸壁運動の左右差', level: 'C', colorZone: 'green', redFlag: true, help: '胸壁の動きに差がある' },
         { id: 'frac_major3', label: '胸郭動揺', level: 'C', colorZone: 'green', redFlag: true, help: '胸郭の一部が逆に動く' },
@@ -993,8 +993,8 @@ const schema = {
       mountId: 'notes',
       title: '記事欄',
       fields: [
-        { id: 'medication_history', label: '薬剤使用歴', kind: 'text' },
-        { id: 'last_oral_intake', label: '最終飲食時刻', kind: 'text' }
+        { id: 'medication_history', label: '薬剤使用歴', kind: 'text', help: '現在使用している薬剤と最終服用時刻を確認。抗凝固薬・抗血小板薬は出血リスクに直結。インスリンや糖尿病薬は意識障害の原因評価に' },
+        { id: 'last_oral_intake', label: '最終飲食時刻', kind: 'text', help : '最終の飲食時刻と内容、飲酒の有無を確認。可能なら「何をどれくらい摂取したか」まで把握' }
       ]
     }
   ]
