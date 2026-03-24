@@ -1449,24 +1449,31 @@ function renderField(container, field) {
   }
 
   // 補足表示トリガー（ⓘ）
-  // 補足表示トリガー（ⓘ）
-  const helpBtn = document.createElement('span');
-  helpBtn.className = 'field-help';
-  helpBtn.textContent = 'ⓘ';
-
-  rightWrap.appendChild(helpBtn);
-
-  helpBtn.addEventListener('click', function(e){
-    e.stopPropagation();
-    let existing = fieldEl.querySelector('.help-content');
-    if(existing){
-      existing.remove();
-      return;
-    }
-
-    const content = buildHelpContent(field);
-    fieldEl.appendChild(content);
+  const hasFieldHelp = !!field.help;
+  const hasOptionHelp = field.options && field.options.some(function(opt) {
+    return !!opt.help;
   });
+
+  if (hasFieldHelp || hasOptionHelp) {
+    const helpBtn = document.createElement('span');
+    helpBtn.className = 'field-help';
+    helpBtn.textContent = 'ⓘ';
+
+    rightWrap.appendChild(helpBtn);
+
+    helpBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+
+      let existing = fieldEl.querySelector('.help-content');
+      if (existing) {
+        existing.remove();
+        return;
+      }
+
+      const content = buildHelpContent(field);
+      fieldEl.appendChild(content);
+    });
+  }
 
   head.appendChild(left);
   head.appendChild(rightWrap);
