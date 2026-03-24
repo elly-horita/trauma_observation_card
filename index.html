@@ -7,360 +7,379 @@
 <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
 <title>外傷観察カード（テスト）</title>
 <style>
-  :root {
-    --bg: #f3f4f6;
-    --card: #ffffff;
-    --line: #1f2937;
-    --muted: #6b7280;
-    --a: #f3f4f6;
-    --b: #fff36a;
-    --c: #48ff48;
-    --danger: #d90000;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
-    background: var(--bg);
-    color: #111827;
-  }
-  button {
-    color: #000;
-    -webkit-text-fill-color: #000;
-    -webkit-appearance: none;
-  }
-  .wrap {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 16px 16px 16px;
-  }
-  .topbar {
-    display: grid;
-    gap: 16px;
-    align-items: start;
-  }
-  .panel {
-    background: var(--card);
-    border: 2px solid var(--line);
-    border-radius: 18px;
-    padding: 16px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-  }
-  .result-panel {
-    position: sticky;
-    bottom: 12px;
-    z-index: 30;
-    border: 4px solid #111827;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(6px);
-  }
-  @media (max-width: 920px) {
-    .result-panel {
-      bottom: 0px;
-    }
-  }
-  .result-panel.expanded {
-    transform: translateY(0);
-  }
-  #resultCompact {
-    margin-bottom: 0;
-    transition: margin-bottom 0.2s ease;
-  }
-  #resultFull {
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    pointer-events: none;
-    transform: translateY(6px);
-    transition:
-      opacity 0.2s ease,
-      max-height 0.25s ease,
-      transform 0.2s ease;
-  }
-  .result-panel.expanded #resultCompact {
-    margin-bottom: 12px;
-  }
-  .result-panel.expanded #resultFull {
-    opacity: 1;
-    max-height: 50vh;
-    overflow: auto;
-    pointer-events: auto;
-    transform: translateY(0);
-  }
-  h1 {
-    margin: 0 0 8px;
-    font-size: 28px;
-  }
-  .sub {
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.6;
-  }
-  .judge-badges {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .judge-badge {
-    min-width: 64px;
-    text-align: center;
-    border: 2px solid var(--line);
-    border-radius: 12px;
-    padding: 8px 12px;
-    font-weight: 800;
-  }
-  .judge-badge.a { background: var(--a); }
-  .judge-badge.b { background: var(--b); }
-  .judge-badge.c { background: var(--c); }
-  .result-main {
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .result-level {
-    margin-top: 8px;
-    font-size: 56px;
-    font-weight: 900;
-    border: 2px solid var(--line);
-    border-radius: 18px;
-    padding: 14px 0;
-    text-align: center;
-  }
-  .result-level.a { background: var(--a); }
-  .result-level.b { background: var(--b); }
-  .result-level.c { background: var(--c); }
-  .summary-box {
-    margin-top: 12px;
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-    background: #fafafa;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-  .actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 14px;
-  }
-  button {
-    border: 2px solid var(--line);
-    border-radius: 12px;
-    background: white;
-    padding: 10px 14px;
-    font: inherit;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .content {
-    margin-top: 16px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .section-title {
-    margin: 0 0 12px;
-    font-size: 22px;
-    font-weight: 900;
-    padding-left: 10px;
-    border-left: 8px solid #111827;
-  }
-  .field {
-    border: 1px solid #d1d5db;
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 12px;
-  }
-  .field-head {
-    background: #111827;
-    color: white;
-    padding: 10px 12px;
-    font-weight: 800;
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    align-items: center;
-  }
-  .field-meta {
-    font-size: 12px;
-    opacity: .8;
-    font-weight: 500;
-  }
-  .field-toggle {
-    font-size: 16px;
-    line-height: 1;
-    min-width: 16px;
-    text-align: center;
-  }
-  .field-head {
-    user-select: none;
-  }
+/* ===============================
+   1. 基本トークン（テーマカラー）
+================================= */
+:root {
+  --bg: #f3f4f6;
+  --card: #ffffff;
+  --line: #1f2937;
+  --muted: #6b7280;
+  --a: #f3f4f6;
+  --b: #fff36a;
+  --c: #48ff48;
+  --danger: #d90000;
+}
 
-  .field-body {
-    padding: 12px;
-    background: #fff;
+/* ===============================
+   2. リセット・ベース
+================================= */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  background: var(--bg);
+  color: #111827;
+}
+
+/* ボタンのiOS補正 */
+button {
+  color: #000;
+  -webkit-text-fill-color: #000;
+  -webkit-appearance: none;
+
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ===============================
+   3. レイアウト
+================================= */
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.topbar {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+
+.content {
+  margin-top: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+/* ===============================
+   4. パネル共通
+================================= */
+.panel {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+/* ===============================
+   5. リザルトパネル（下固定UI）
+================================= */
+.result-panel {
+  position: sticky;
+  bottom: 12px;
+  z-index: 30;
+
+  border: 4px solid #111827;
+  box-shadow: 0 6px 12px rgba(0,0,0,.3);
+
+  /* 半透明＋ブラーで「上に乗ってる感」を出す */
+  background: rgba(255,255,255,.6);
+  backdrop-filter: blur(6px);
+}
+
+@media (max-width: 920px) {
+  .result-panel {
+    bottom: 0;
   }
-  .options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
-  }
-  .option {
-    border: 2px solid #9ca3af;
-    border-radius: 14px;
-    padding: 10px;
-    min-height: 54px;
-    cursor: pointer;
-    background: white;
-    font-weight: 800;
-    line-height: 1.4;
-    text-align: center;
-  }
-  .option.zone-white { background: #fff; }
-  .option.zone-yellow { background: var(--b); }
-  .option.zone-green { background: var(--c); }
-  .option.red-flag { box-shadow: inset 0 0 0 3px var(--danger); }
-  .option.selected {
-    border-color: #111827;
-    outline: 4px solid #111827;
-    outline-offset: -4px;
-  }
-  .option-check {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: left;
-    gap: 8px;
-  }
-  .checkmark {
-    font-size: 18px;
-    line-height: 1;
-    flex: 0 0 auto;
-  }
-  .check-group {
-    border-radius: 14px;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  .check-group-white {
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-  }
-  .check-group-yellow {
-    background: #fff36a;
-    border: 1px solid #d4b900;
-  }
-  .check-group-green {
-    background: #48ff48;
-    border: 1px solid #2da52d;
-  }
-  .check-group-redgreen {
-    background: #48ff48;
-    border: 3px solid #d90000;
-  }
-  .check-group-title {
-    font-size: 12px;
-    font-weight: 800;
-    margin-bottom: 8px;
-  }
-  .check-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 6px;
-  }
-  .check-row {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    text-align: left;
-    border: 1px solid rgba(17,24,39,.18);
-    border-radius: 10px;
-    background: rgba(255,255,255,.45);
-    padding: 9px 10px;
-    font: inherit;
-    cursor: pointer;
-	  align-items: flex-start;
-  }
-  .check-row.selected {
-    border-color: #111827;
-    outline: 3px solid #111827;
-    outline-offset: -3px;
-    background: rgba(255,255,255,.85);
-  }
-  .checkmark {
-    flex: 0 0 auto;
-    font-size: 18px;
-    line-height: 1;
-  }
-  .check-label {
-    flex: 1 1 auto;
-    font-weight: 700;
-    line-height: 1.4;
-  }
-  .option-label { flex: 1 1 auto; }
-  .option small {
-    display: block;
-    margin-top: 4px;
-    font-size: 11px;
-    font-weight: 700;
-  }
-  .row {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 12px;
-    align-items: center;
-  }
-  .num-grid {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 10px;
-    align-items: center;
-  }
-  input[type="number"],
-  input[type="text"],
-  textarea,
-  select {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 2px solid #9ca3af;
-    font: inherit;
-    background: #fff;
-  }
-  textarea {
-    min-height: 88px;
-    resize: vertical;
-  }
-  .hint {
-    margin-top: 8px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .selected-list {
-    margin: 12px 0 0;
-    padding-left: 18px;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  .selected-list li { margin-bottom: 6px; }
-  pre {
-    white-space: pre-wrap;
-    word-break: break-word;
-    margin-top: 12px;
-    background: #0f172a;
-    color: #d1fae5;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    overflow: auto;
-  }
-	
+}
+
+/* 展開アニメーション制御 */
+#resultCompact {
+  margin-bottom: 0;
+  transition: margin-bottom .2s ease;
+}
+
+#resultFull {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition:
+    opacity .2s ease,
+    max-height .25s ease,
+    transform .2s ease;
+}
+
+.result-panel.expanded #resultCompact {
+  margin-bottom: 12px;
+}
+
+.result-panel.expanded #resultFull {
+  opacity: 1;
+  max-height: 50vh;
+  overflow: auto;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* ===============================
+   6. 見出し・説明
+================================= */
+h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.sub {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.section-title {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 900;
+  padding-left: 10px;
+  border-left: 8px solid #111827;
+}
+
+.judge-badges {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.judge-badge {
+  min-width: 64px;
+  text-align: center;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-weight: 800;
+}
+
+.judge-badge.a { background: var(--a); }
+.judge-badge.b { background: var(--b); }
+.judge-badge.c { background: var(--c); }
+
+/* ===============================
+   7. 判定表示（A/B/C）
+================================= */
+.result-main {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.result-level {
+  margin-top: 8px;
+  font-size: 56px;
+  font-weight: 900;
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 0;
+  text-align: center;
+}
+
+.result-level.a { background: var(--a); }
+.result-level.b { background: var(--b); }
+.result-level.c { background: var(--c); }
+
+/* ===============================
+   8. サマリー・リスト
+================================= */
+.summary-box {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #fafafa;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.selected-list {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.selected-list li {
+  margin-bottom: 6px;
+}
+
+/* ===============================
+   9. 入力フィールド
+================================= */
+.field {
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.field-head {
+  background: #111827;
+  color: white;
+  padding: 10px 12px;
+  font-weight: 800;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.field-meta {
+  font-size: 12px;
+  opacity: .8;
+}
+
+.field-toggle {
+  font-size: 16px;
+}
+
+.field-body {
+  padding: 12px;
+  background: #fff;
+}
+
+/* ===============================
+   10. 単一選択ボタン
+================================= */
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.option {
+  border: 2px solid #9ca3af;
+  border-radius: 14px;
+  padding: 10px;
+  min-height: 54px;
+  background: white;
+  font-weight: 800;
+  text-align: center;
+}
+
+.option.zone-white { background: #fff; }
+.option.zone-yellow { background: var(--b); }
+.option.zone-green { background: var(--c); }
+
+.option.red-flag {
+  box-shadow: inset 0 0 0 3px var(--danger);
+}
+
+.option.selected {
+  border-color: #111827;
+  outline: 4px solid #111827;
+  outline-offset: -4px;
+}
+
+/* ===============================
+   11. 複数選択（チェックリスト）
+================================= */
+.check-group {
+  border-radius: 14px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.check-group-white { background:#fff; border:1px solid #d1d5db; }
+.check-group-yellow { background:var(--b); border:1px solid #d4b900; }
+.check-group-green { background:var(--c); border:1px solid #2da52d; }
+.check-group-redgreen { background:var(--c); border:3px solid var(--danger); }
+
+.check-group-title {
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.check-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 6px;
+}
+
+.check-row {
+  display: flex;
+  gap: 8px;
+  border: 1px solid rgba(17,24,39,.18);
+  border-radius: 10px;
+  background: rgba(255,255,255,.45);
+  padding: 9px 10px;
+  cursor: pointer;
+}
+
+.check-row.selected {
+  border-color: #111827;
+  outline: 3px solid #111827;
+  background: rgba(255,255,255,.85);
+}
+
+.checkmark {
+  font-size: 18px;
+}
+
+.check-label {
+  flex: 1;
+  font-weight: 700;
+}
+
+/* ===============================
+   12. 入力フォーム
+================================= */
+.row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 12px;
+}
+
+.num-grid {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 2px solid #9ca3af;
+  font: inherit;
+  background: #fff;
+}
+
+textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ===============================
+   13. ヘルプ（ⓘ）
+================================= */
 .field-help {
   font-size: 14px;
   cursor: pointer;
-  opacity: 0.7;
+  opacity: .7;
 }
 
 .help-content {
@@ -370,44 +389,48 @@
   background: #f9fafb;
   border: 1px solid #d1d5db;
   font-size: 12px;
-  line-height: 1.5;
 }
 
 .help-row {
   margin-bottom: 4px;
 }
-  @media (max-width: 920px) {
-    .topbar { grid-template-columns: 1fr; }
-    .row, .num-grid { grid-template-columns: 1fr; }
+
+/* ===============================
+   14. レスポンシブ
+================================= */
+@media (max-width: 920px) {
+  .topbar { grid-template-columns: 1fr; }
+  .row, .num-grid { grid-template-columns: 1fr; }
+}
+
+/* ===============================
+   15. 印刷専用
+================================= */
+@media print {
+  body * {
+    visibility: hidden !important;
   }
-  @media print {
-    body * {
-      visibility: hidden !important;
-    }
 
-    #resultPanel,
-    #resultPanel * {
-      visibility: visible !important;
-    }
-
-    #resultPanel {
-      position: absolute !important;
-      left: 0;
-      top: 0;
-      width: 100%;
-      max-width: 100%;
-      margin: 0;
-      box-shadow: none !important;
-    }
-
-    .actions {
-      display: none !important;
-    }
-
-    body {
-      background: #fff !important;
-    }
+  #resultPanel,
+  #resultPanel * {
+    visibility: visible !important;
   }
+
+  #resultPanel {
+    position: absolute !important;
+    top: 0;
+    width: 100%;
+    box-shadow: none !important;
+  }
+
+  .actions {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -977,10 +1000,16 @@ const schema = {
 };
 
 const state = {
+  // ユーザーの入力値を保持する
   values: {},
+  // 複数選択項目（multi）の開閉状態を保持する
   openGroups: {}
 };
 
+/**
+ * field.id から schema 上の field 定義を探して返す
+ * どの項目かを逆引きしたいときに使う
+ */
 function getFieldById(fieldId) {
   for (const section of schema.sections) {
     for (const field of section.fields) {
@@ -990,6 +1019,10 @@ function getFieldById(fieldId) {
   return null;
 }
 
+/**
+ * kind を画面表示用の日本語ラベルに変換する
+ * 例: single → 単一選択
+ */
 function getKindLabel(kind) {
   if (kind === 'single') return '単一選択';
   if (kind === 'multi') return '複数選択可';
@@ -1000,6 +1033,10 @@ function getKindLabel(kind) {
   return '';
 }
 
+/**
+ * 数値入力が、指定された閾値ルールのどこに当てはまるか判定する
+ * number / thresholds 判定の共通処理
+ */
 function matchThreshold(value, rules) {
   if (value === '' || value === null || value === undefined) return null;
   const num = Number(value);
@@ -1012,6 +1049,10 @@ function matchThreshold(value, rules) {
   }) || null;
 }
 
+/**
+ * 1つの field の入力値を、結果表示・JSON出力用の共通形式に変換する
+ * kind ごとに返り値の形を揃えるための中核処理
+ */
 function getEvaluation(field) {
   const raw = state.values[field.id];
 
@@ -1060,6 +1101,7 @@ function getEvaluation(field) {
     const modeKey = field.id + '__mode';
     const modeVal = state.values[modeKey];
 
+    // extraOptions（例: 測定不能）選択時の処理
     if (modeVal && field.extraOptions) {
       const extra = field.extraOptions.find(function(opt) {
         return opt.id === modeVal;
@@ -1166,6 +1208,10 @@ function getEvaluation(field) {
   return null;
 }
 
+/**
+ * schema 全体を走査して、すべての評価結果を1本の配列にまとめる
+ * multi は複数件、single/number/text は単体で集約される
+ */
 function evaluateAll() {
   const evaluations = [];
 
@@ -1183,6 +1229,10 @@ function evaluateAll() {
   return evaluations;
 }
 
+/**
+ * 評価結果の一覧から、総合判定（A/B/C）を決める
+ * 赤枠最優先 → C複数 → C単独 or B複数 → B単独 → A
+ */
 function summarizeResult(evaluations) {
   const withLevel = evaluations.filter(function(v) {
     return v.level;
@@ -1227,10 +1277,17 @@ function summarizeResult(evaluations) {
   };
 }
 
+/**
+ * option の状態（色帯・赤枠）からボタン用クラス文字列を作る
+ */
 function createOptionButtonClass(option) {
   return 'option zone-' + (option.colorZone || 'white') + (option.redFlag ? ' red-flag' : '');
 }
 
+/**
+ * single 用の選択ボタンを生成する
+ * 同じボタンを再度押すと解除、別ボタンなら上書き
+ */
 function makeOptionButton(field, option) {
   const button = document.createElement('button');
   button.type = 'button';
@@ -1256,6 +1313,10 @@ function makeOptionButton(field, option) {
   return button;
 }
 
+/**
+ * multi 用のチェックリストを色帯ごとに分けて描画する
+ * 白 / 黄 / 緑 / 赤枠緑 の4グループ
+ */
 function renderMultiChecklist(container, field) {
   const groups = {
     white: [],
@@ -1346,6 +1407,10 @@ function renderMultiChecklist(container, field) {
   });
 }
 
+/**
+ * 1つの field を描画する
+ * kind ごとに UI を出し分ける中核関数
+ */
 function renderField(container, field) {
   const fieldEl = document.createElement('div');
   fieldEl.className = 'field';
@@ -1364,9 +1429,10 @@ function renderField(container, field) {
   const meta = document.createElement('span');
   meta.className = 'field-meta';
   meta.textContent = getKindLabel(field.kind);
-	
+
   rightWrap.appendChild(meta);
 
+  // multi 項目には開閉トグルを付ける
   let toggle = null;
   if (field.kind === 'multi') {
     const isOpen = !!state.openGroups[field.id];
@@ -1382,6 +1448,7 @@ function renderField(container, field) {
     });
   }
 
+  // 補足表示トリガー（ⓘ）
   const helpBtn = document.createElement('span');
   helpBtn.className = 'field-help';
   helpBtn.textContent = 'ⓘ';
@@ -1399,7 +1466,7 @@ function renderField(container, field) {
     const content = buildHelpContent(field);
     fieldEl.appendChild(content);
   });
-	
+
   head.appendChild(left);
   head.appendChild(rightWrap);
   fieldEl.appendChild(head);
@@ -1490,6 +1557,7 @@ function renderField(container, field) {
     grid.appendChild(input);
     body.appendChild(grid);
 
+    // number 項目の extraOptions（例: 測定不能）
     if (field.extraOptions && field.extraOptions.length) {
       const optWrap = document.createElement('div');
       optWrap.className = 'options';
@@ -1581,6 +1649,10 @@ function renderField(container, field) {
   container.appendChild(fieldEl);
 }
 
+/**
+ * 補足（help）内容のDOMを作る
+ * option.help があるものだけ列挙する
+ */
 function buildHelpContent(field) {
   const list = document.createElement('div');
   list.className = 'help-content';
@@ -1597,6 +1669,10 @@ function buildHelpContent(field) {
   return list;
 }
 
+/**
+ * schema 全体をもとに、画面の入力UIをすべて描き直す
+ * 折りたたみ状態は state.openGroups を参照する
+ */
 function renderAll() {
   schema.sections.forEach(function(section) {
     const mount = document.getElementById(section.mountId);
@@ -1612,6 +1688,9 @@ function renderAll() {
   });
 }
 
+/**
+ * 再描画後のDOMに対して、選択済み状態（selected / ☑）を反映する
+ */
 function syncInputsFromState() {
   schema.sections.forEach(function(section) {
     section.fields.forEach(function(field) {
@@ -1645,6 +1724,10 @@ function syncInputsFromState() {
   });
 }
 
+/**
+ * number 項目の下に出す補助テキストを更新する
+ * 例: 成人の基準で判定 / 判定帯: 90〜140 / B
+ */
 function updateNumberHints() {
   schema.sections.forEach(function(section) {
     section.fields.forEach(function(field) {
@@ -1684,6 +1767,10 @@ function updateNumberHints() {
   });
 }
 
+/**
+ * 総合判定パネル（右/下の resultPanel）の表示内容を更新する
+ * 判定、理由、選択済み一覧を描画する
+ */
 function updateResultPanel(summary) {
   const resultLevel = document.getElementById('resultLevel');
   resultLevel.textContent = summary.level;
@@ -1725,6 +1812,10 @@ function updateResultPanel(summary) {
   });
 }
 
+/**
+ * 現在状態を JSON 出力用のオブジェクトに変換する
+ * exportJSON から利用される
+ */
 function buildExportObject(summary) {
   const fields = {};
   schema.sections.forEach(function(section) {
@@ -1754,6 +1845,10 @@ function buildExportObject(summary) {
   };
 }
 
+/**
+ * UI全体の更新処理
+ * 再描画 → 選択状態反映 → number補助表示更新 → 総合判定更新 → JSONプレビュー更新
+ */
 function updateUI() {
   renderAll();
   syncInputsFromState();
@@ -1769,6 +1864,10 @@ function updateUI() {
   }
 }
 
+/**
+ * 現在状態を JSON として表示する
+ * ダウンロードではなく、画面内 preview 用
+ */
 function exportJSON() {
   const summary = summarizeResult(evaluateAll());
   const out = document.getElementById('jsonOut');
@@ -1778,6 +1877,10 @@ function exportJSON() {
   out.textContent = JSON.stringify(buildExportObject(summary), null, 2);
 }
 
+/**
+ * 入力値・表示中JSONをリセットする
+ * UIは updateUI で再反映する
+ */
 function resetAll() {
   state.values = {};
   document.querySelectorAll('input, textarea, select').forEach(function(el) {
@@ -1793,16 +1896,10 @@ function resetAll() {
   updateUI();
 }
 
-const exportBtn = document.getElementById('exportBtn');
-if (exportBtn) {
-  exportBtn.addEventListener('click', exportJSON);
-}
-
-const resetBtn = document.getElementById('resetBtn');
-if (resetBtn) {
-  resetBtn.addEventListener('click', resetAll);
-}
-
+/**
+ * スクロール位置に応じて resultPanel を展開/折りたたみする
+ * 一番下付近で expanded クラスを付与する
+ */
 function updateResultPanelExpand() {
   var panel = document.getElementById('resultPanel');
   if (!panel) return;
@@ -1829,10 +1926,15 @@ function updateResultPanelExpand() {
   }
 }
 
+// スクロール・リサイズ・初回表示時に resultPanel の開閉状態を更新する
 window.addEventListener('scroll', updateResultPanelExpand);
 window.addEventListener('resize', updateResultPanelExpand);
 window.addEventListener('load', updateResultPanelExpand);
 
+/**
+ * resultPanel の内容だけを別ウィンドウに書き出して印刷する
+ * そのままPDF保存も想定
+ */
 function exportResultPDF() {
   var resultPanel = document.getElementById('resultPanel');
   if (!resultPanel) return;
@@ -1920,10 +2022,26 @@ function exportResultPDF() {
     printWindow.print();
   }, 500);
 }
+
+// JSON出力ボタンのイベント登録
+const exportBtn = document.getElementById('exportBtn');
+if (exportBtn) {
+  exportBtn.addEventListener('click', exportJSON);
+}
+
+// リセットボタンのイベント登録
+const resetBtn = document.getElementById('resetBtn');
+if (resetBtn) {
+  resetBtn.addEventListener('click', resetAll);
+}
+
+// PDF出力ボタンのイベント登録
 var pdfBtn = document.getElementById('pdfBtn');
 if (pdfBtn) {
   pdfBtn.addEventListener('click', exportResultPDF);
 }
+
+// 初期描画
 renderAll();
 updateUI();
 </script>
